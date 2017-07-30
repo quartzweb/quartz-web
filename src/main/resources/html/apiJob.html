@@ -1,0 +1,739 @@
+<!--/api/jobInfo.json-->
+<div>
+    <div id="jobInfo.json"><h1>&nbsp;</h1></div>
+    <div class="page-header">
+        <h4>7.获取Job信息</h4>
+    </div>
+    <div class="row">
+        <div class="col-lg-12">
+            <form class="form-horizontal">
+                <div class="form-group">
+                    <label class="col-lg-2 control-label">
+                        描述:
+                    </label>
+                    <label class="col-lg-10 control-label" style="text-align:left">
+                        获取(Job)作业的信息<br>
+                        返回值为Map类型的Json信息,key值为(Scheduler)调度器名称,value为(job)作业信息
+                    </label>
+                </div>
+                <div class="form-group">
+                    <label class="col-lg-2 control-label">
+                        url:
+                    </label>
+                    <label class="col-lg-10 control-label" style="text-align:left">
+                        /api/jobInfo.json
+                    </label>
+                </div>
+                <div class="form-group">
+                    <label class="col-lg-2 control-label">
+                        输入参数:
+                    </label>
+                    <div class="col-lg-10" >
+                        <label class="control-label" style="text-align: left">
+                            无
+                        </label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-lg-2 control-label">
+                        输出参数:
+                    </label>
+                    <div class="col-lg-10" >
+                        <table class="table table-striped table-bordered table-condensed">
+                            <tr>
+                                <th style="width: 20%">参数名称</th>
+                                <th style="width: 10%">类型</th>
+                                <th>描述</th>
+                            </tr>
+                            <tr>
+                                <td>content.schedulerName</td>
+                                <td>json array</td>
+                                <td>key值为(Scheduler)调度器名称,value值为(Job)作业信息</td>
+                            </tr>
+                            <tr>
+                                <td>jobName</td>
+                                <td>string</td>
+                                <td>(job)作业名称</td>
+                            </tr>
+                            <tr>
+                                <td>jobGroup</td>
+                                <td>string</td>
+                                <td>(job)作业分组</td>
+                            </tr>
+                            <tr>
+                                <td>jobClass</td>
+                                <td>string</td>
+                                <td>
+                                    (jobClass)作业类有一下几类:
+                                    <ul style="list-style-type:decimal">
+                                        <li>com.github.quartzweb.job.MethodInvokeJob:执行方法的Job</li>
+                                        <li>com.github.quartzweb.job.StatefulMethodInvokeJob:有状态执行方法的Job</li>
+                                        <li>implements org.quartz.Job:继承Job的正常类</li>
+                                    </ul>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>isConcurrentExectionDisallowed</td>
+                                <td>string</td>
+                                <td>(job)作业是否允许并发</td>
+                            </tr>
+                            <tr>
+                                <td>isDurable</td>
+                                <td>string</td>
+                                <td>(job)作业是否持久化</td>
+                            </tr>
+                            <tr>
+                                <td>isPersistJobDataAfterExecution</td>
+                                <td>string</td>
+                                <td>是否执行后保存</td>
+                            </tr>
+                            <tr>
+                                <td>description</td>
+                                <td>string</td>
+                                <td>(job)作业描述</td>
+                            </tr>
+                            <tr>
+                                <td>jobDataMap</td>
+                                <td>string</td>
+                                <td>
+                                    (job)作业执行时的数据
+                                </td>
+                            </tr>
+
+                        </table>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-lg-2 control-label">
+                        请求示例:
+                    </label>
+                    <div class="col-lg-10" >
+                        <pre>url/api/jobInfo.json</pre>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-lg-2 control-label">
+                        返回信息:
+                    </label>
+                    <div class="col-lg-10" >
+                         <pre class="jsonCode">
+                            {
+                            "resultCode": 1,
+                            "content": {
+                                "quartzScheduler": [
+                                        {
+                                            "jobName": "2",
+                                            "jobGroup": "2",
+                                            "jobClass": "com.github.quartzweb.job.MethodInvokeJob",
+                                            "isConcurrentExectionDisallowed": false,
+                                            "isDurable": true,
+                                            "isPersistJobDataAfterExecution": false,
+                                            "jobDataMap": {
+                                                "methodInvoker": "com.github.quartzweb.job.MethodInvoker"
+                                            },
+                                            "description": ""
+                                        },
+                                        {
+                                            "jobName": "55",
+                                            "jobGroup": "55555",
+                                            "jobClass": "com.github.quartzweb.job.MethodInvokeJob",
+                                            "isConcurrentExectionDisallowed": false,
+                                            "isDurable": true,
+                                            "isPersistJobDataAfterExecution": false,
+                                            "jobDataMap": {
+                                                "methodInvoker": "com.github.quartzweb.job.MethodInvoker"
+                                            },
+                                            "description": "15554"
+                                        }
+                                    ]
+                                }
+                             }
+                        </pre>
+                    </div>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>
+<!--end /api/jobInfo.json-->
+
+<!--/api/jobAdd.json-->
+<div>
+    <div id="jobAdd.json"><h1>&nbsp;</h1></div>
+    <div class="page-header">
+        <h4>8.添加Job</h4>
+    </div>
+    <div class="row">
+        <div class="col-lg-12">
+            <form class="form-horizontal">
+                <div class="form-group">
+                    <label class="col-lg-2 control-label">
+                        描述:
+                    </label>
+                    <label class="col-lg-10 control-label" style="text-align:left">
+                        添加(Job)作业的信息,如果job存在便修改,jobClass有三类<br>
+                        <ul style="list-style-type:decimal">
+                            <li>继承org.quartz.Job类</li>
+                            <li>执行类的某个方法</li>
+                            <li>有状态-执行类的某个方法</li>
+                        </ul>
+                    </label>
+                </div>
+                <div class="form-group">
+                    <label class="col-lg-2 control-label">
+                        url:
+                    </label>
+                    <label class="col-lg-10 control-label" style="text-align:left">
+                        /api/jobAdd.json
+                    </label>
+                </div>
+                <div class="form-group">
+                    <label class="col-lg-2 control-label">
+                        输入参数:
+                    </label>
+                    <div class="col-lg-10" >
+                        <table class="table table-striped table-bordered table-condensed">
+                            <tr>
+                                <th style="width: 20%">参数名称</th>
+                                <th style="width: 10%">类型</th>
+                                <th style="width: 10%">是否必填</th>
+                                <th>描述</th>
+                            </tr>
+                            <tr>
+                                <td>schedulerName</td>
+                                <td>String</td>
+                                <td>YES</td>
+                                <td>(scheduler)调度器名称</td>
+                            </tr>
+                            <tr>
+                                <td>jobName</td>
+                                <td>String</td>
+                                <td>YES</td>
+                                <td>(job)作业名称</td>
+                            </tr>
+                            <tr>
+                                <td>jobGroup</td>
+                                <td>String</td>
+                                <td>YES</td>
+                                <td>(job)作业分组</td>
+                            </tr>
+                            <tr>
+                                <td>jobClass</td>
+                                <td>String</td>
+                                <td>YES</td>
+                                <td>
+                                    (job)作业执行类
+                                    <ul style="list-style-type:decimal">
+                                        <li>继承org.quartz.Job类</li>
+                                        <li>自定义类</li>
+                                    </ul>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>jobType</td>
+                                <td>String</td>
+                                <td>YES</td>
+                                <td>
+                                    (job)作业执行类的类型
+                                    <ul>
+                                        <li>1:继承org.quartz.Job类</li>
+                                        <li>2:自定义类</li>
+                                    </ul>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>jobClassParamType_{index}</td>
+                                <td>String</td>
+                                <td>NO</td>
+                                <td>
+                                    (job)作业类的参数类型<br>
+                                    index:序号
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>jobClassParamTypeValue_{index}</td>
+                                <td>String</td>
+                                <td>NO</td>
+                                <td>
+                                    (job)作业类的参数<br>
+                                    index:序号<br>
+                                    类型需要和jobClassParamType_{index}对应,否则将会报错
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>jobClassMethodName</td>
+                                <td>String</td>
+                                <td>NO</td>
+                                <td>
+                                    (job)作业当为自定义类是,必填<br>
+                                    必须是自定义类中有的方法,否则报错
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>jobClassMethodParamType_{index}</td>
+                                <td>String</td>
+                                <td>NO</td>
+                                <td>
+                                    (job)作业方法参数类型<br>
+                                    index:序号
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>jobClassMethodParamTypeValue_{index}</td>
+                                <td>String</td>
+                                <td>NO</td>
+                                <td>
+                                    (job)作业方法参数类型<br>
+                                    index:序号<br>
+                                    类型需要和jobClassMethodParamType_{index}对应,否则将会报错
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>methodInvokerType</td>
+                                <td>String</td>
+                                <td>NO</td>
+                                <td>
+                                    (job)作业方法执行类型
+                                    <ul>
+                                        <li>1:无状态</li>
+                                        <li>2:有状态</li>
+                                    </ul>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>jobDataMapKey_{index}</td>
+                                <td>String</td>
+                                <td>NO</td>
+                                <td>(job)作业数据(jobDataMap)key值</td>
+                            </tr>
+                            <tr>
+                                <td>jobDataMapValue_{index}</td>
+                                <td>String</td>
+                                <td>NO</td>
+                                <td>(job)作业数据(jobDataMap)value值</td>
+                            </tr>
+                            <tr>
+                                <td>description</td>
+                                <td>String</td>
+                                <td>NO</td>
+                                <td>(job)作业描述</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-lg-2 control-label">
+                        输出参数:
+                    </label>
+                    <div class="col-lg-10" >
+                        <pre>"ok"</pre>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-lg-2 control-label">
+                        请求示例:
+                    </label>
+                    <div class="col-lg-10" >
+                        <pre>url/api/jobAdd.json?schedulerName=quartzScheduler
+                            &jobName=job1&jobGroup=job2&jobType=1
+                            &jobClass=com.github.quartzweb.job.TestJob
+                            &jobDataMapKey_0=key
+                            &jobDataMapValue_0=value
+                            &description=测试</pre>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-lg-2 control-label">
+                        返回信息:
+                    </label>
+                    <div class="col-lg-10" >
+                         <pre class="jsonCode">
+                            {
+                                "resultCode": 1,
+                                "content": "ok"
+                                }
+                        </pre>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<!--end /api/jobAdd.json-->
+
+<!--/api/jobResume.json-->
+<div>
+    <div id="jobResume.json"><h1>&nbsp;</h1></div>
+    <div class="page-header">
+        <h4>9.重启Job</h4>
+    </div>
+    <div class="row">
+        <div class="col-lg-12">
+            <form class="form-horizontal">
+                <div class="form-group">
+                    <label class="col-lg-2 control-label">
+                        描述:
+                    </label>
+                    <label class="col-lg-10 control-label" style="text-align:left">
+                        重启(job)作业
+                    </label>
+                </div>
+                <div class="form-group">
+                    <label class="col-lg-2 control-label">
+                        url:
+                    </label>
+                    <label class="col-lg-10 control-label" style="text-align:left">
+                        /api/jobResume.json
+                    </label>
+                </div>
+                <div class="form-group">
+                    <label class="col-lg-2 control-label">
+                        输入参数:
+                    </label>
+                    <div class="col-lg-10" >
+                        <table class="table table-striped table-bordered table-condensed">
+                            <tr>
+                                <th style="width: 20%">参数名称</th>
+                                <th style="width: 10%">类型</th>
+                                <th style="width: 10%">是否必填</th>
+                                <th>描述</th>
+                            </tr>
+                            <tr>
+                                <td>schedulerName</td>
+                                <td>String</td>
+                                <td>YES</td>
+                                <td>(scheduler)调度器名称</td>
+                            </tr>
+                            <tr>
+                                <td>jobName</td>
+                                <td>String</td>
+                                <td>YES</td>
+                                <td>(job)作业名称</td>
+                            </tr>
+                            <tr>
+                                <td>jobGroup</td>
+                                <td>String</td>
+                                <td>YES</td>
+                                <td>(job)作业分组</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-lg-2 control-label">
+                        输出参数:
+                    </label>
+                    <div class="col-lg-10" >
+                        <pre>"ok"</pre>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-lg-2 control-label">
+                        请求示例:
+                    </label>
+                    <div class="col-lg-10" >
+                        <pre>url/api/jobResume.json?schedulerName=quartzScheduler&jobName=jobName&jobGroup=jobGroup</pre>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-lg-2 control-label">
+                        返回信息:
+                    </label>
+                    <div class="col-lg-10" >
+                         <pre class="jsonCode">
+                            {
+                                "resultCode": 1,
+                                "content": "ok"
+                             }
+                        </pre>
+                    </div>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>
+<!--end /api/jobResume.json-->
+
+<!--/api/jobRemove.json-->
+<div>
+    <div id="jobRemove.json"><h1>&nbsp;</h1></div>
+    <div class="page-header">
+        <h4>10.移除Job</h4>
+    </div>
+    <div class="row">
+        <div class="col-lg-12">
+            <form class="form-horizontal">
+                <div class="form-group">
+                    <label class="col-lg-2 control-label">
+                        描述:
+                    </label>
+                    <label class="col-lg-10 control-label" style="text-align:left">
+                        移除(job)作业,暂停全部的(job)作业之后删除
+                    </label>
+                </div>
+                <div class="form-group">
+                    <label class="col-lg-2 control-label">
+                        url:
+                    </label>
+                    <label class="col-lg-10 control-label" style="text-align:left">
+                        /api/jobRemove.json
+                    </label>
+                </div>
+                <div class="form-group">
+                    <label class="col-lg-2 control-label">
+                        输入参数:
+                    </label>
+                    <div class="col-lg-10" >
+                        <table class="table table-striped table-bordered table-condensed">
+                            <tr>
+                                <th style="width: 20%">参数名称</th>
+                                <th style="width: 10%">类型</th>
+                                <th style="width: 10%">是否必填</th>
+                                <th>描述</th>
+                            </tr>
+                            <tr>
+                                <td>schedulerName</td>
+                                <td>String</td>
+                                <td>YES</td>
+                                <td>(scheduler)调度器名称</td>
+                            </tr>
+                            <tr>
+                                <td>jobName</td>
+                                <td>String</td>
+                                <td>YES</td>
+                                <td>(job)作业名称</td>
+                            </tr>
+                            <tr>
+                                <td>jobGroup</td>
+                                <td>String</td>
+                                <td>YES</td>
+                                <td>(job)作业分组</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-lg-2 control-label">
+                        输出参数:
+                    </label>
+                    <div class="col-lg-10" >
+                        <pre>"ok"</pre>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-lg-2 control-label">
+                        请求示例:
+                    </label>
+                    <div class="col-lg-10" >
+                        <pre>url/api/jobRemove.json?schedulerName=quartzScheduler&jobName=jobName&jobGroup=jobGroup</pre>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-lg-2 control-label">
+                        返回信息:
+                    </label>
+                    <div class="col-lg-10" >
+                         <pre class="jsonCode">
+                            {
+                                "resultCode": 1,
+                                "content": "ok"
+                             }
+                        </pre>
+                    </div>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>
+<!--end /api/jobRemove.json-->
+
+<!--/api/jobPause.json-->
+<div>
+    <div id="jobPause.json"><h1>&nbsp;</h1></div>
+    <div class="page-header">
+        <h4>11.暂停Job</h4>
+    </div>
+    <div class="row">
+        <div class="col-lg-12">
+            <form class="form-horizontal">
+                <div class="form-group">
+                    <label class="col-lg-2 control-label">
+                        描述:
+                    </label>
+                    <label class="col-lg-10 control-label" style="text-align:left">
+                        暂停(job)作业,暂停全部的(trigger)触发器
+                    </label>
+                </div>
+                <div class="form-group">
+                    <label class="col-lg-2 control-label">
+                        url:
+                    </label>
+                    <label class="col-lg-10 control-label" style="text-align:left">
+                        /api/jobPause.json
+                    </label>
+                </div>
+                <div class="form-group">
+                    <label class="col-lg-2 control-label">
+                        输入参数:
+                    </label>
+                    <div class="col-lg-10" >
+                        <table class="table table-striped table-bordered table-condensed">
+                            <tr>
+                                <th style="width: 20%">参数名称</th>
+                                <th style="width: 10%">类型</th>
+                                <th style="width: 10%">是否必填</th>
+                                <th>描述</th>
+                            </tr>
+                            <tr>
+                                <td>schedulerName</td>
+                                <td>String</td>
+                                <td>YES</td>
+                                <td>(scheduler)调度器名称</td>
+                            </tr>
+                            <tr>
+                                <td>jobName</td>
+                                <td>String</td>
+                                <td>YES</td>
+                                <td>(job)作业名称</td>
+                            </tr>
+                            <tr>
+                                <td>jobGroup</td>
+                                <td>String</td>
+                                <td>YES</td>
+                                <td>(job)作业分组</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-lg-2 control-label">
+                        输出参数:
+                    </label>
+                    <div class="col-lg-10" >
+                        <pre>"ok"</pre>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-lg-2 control-label">
+                        请求示例:
+                    </label>
+                    <div class="col-lg-10" >
+                        <pre>url/api/jobPause.json?schedulerName=quartzScheduler&jobName=jobName&jobGroup=jobGroup</pre>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-lg-2 control-label">
+                        返回信息:
+                    </label>
+                    <div class="col-lg-10" >
+                         <pre class="jsonCode">
+                            {
+                                "resultCode": 1,
+                                "content": "ok"
+                             }
+                        </pre>
+                    </div>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>
+<!--end /api/jobPause.json-->
+
+<!--/api/jobRun.json-->
+<div>
+    <div id="jobRun.json"><h1>&nbsp;</h1></div>
+    <div class="page-header">
+        <h4>12.运行Job</h4>
+    </div>
+    <div class="row">
+        <div class="col-lg-12">
+            <form class="form-horizontal">
+                <div class="form-group">
+                    <label class="col-lg-2 control-label">
+                        描述:
+                    </label>
+                    <label class="col-lg-10 control-label" style="text-align:left">
+                        运行(job)作业
+                    </label>
+                </div>
+                <div class="form-group">
+                    <label class="col-lg-2 control-label">
+                        url:
+                    </label>
+                    <label class="col-lg-10 control-label" style="text-align:left">
+                        /api/jobRun.json
+                    </label>
+                </div>
+                <div class="form-group">
+                    <label class="col-lg-2 control-label">
+                        输入参数:
+                    </label>
+                    <div class="col-lg-10" >
+                        <table class="table table-striped table-bordered table-condensed">
+                            <tr>
+                                <th style="width: 20%">参数名称</th>
+                                <th style="width: 10%">类型</th>
+                                <th style="width: 10%">是否必填</th>
+                                <th>描述</th>
+                            </tr>
+                            <tr>
+                                <td>schedulerName</td>
+                                <td>String</td>
+                                <td>YES</td>
+                                <td>(scheduler)调度器名称</td>
+                            </tr>
+                            <tr>
+                                <td>jobName</td>
+                                <td>String</td>
+                                <td>YES</td>
+                                <td>(job)作业名称</td>
+                            </tr>
+                            <tr>
+                                <td>jobGroup</td>
+                                <td>String</td>
+                                <td>YES</td>
+                                <td>(job)作业分组</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-lg-2 control-label">
+                        输出参数:
+                    </label>
+                    <div class="col-lg-10" >
+                        <pre>"ok"</pre>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-lg-2 control-label">
+                        请求示例:
+                    </label>
+                    <div class="col-lg-10" >
+                        <pre>url/api/jobRun.json?schedulerName=quartzScheduler&jobName=jobName&jobGroup=jobGroup</pre>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-lg-2 control-label">
+                        返回信息:
+                    </label>
+                    <div class="col-lg-10" >
+                         <pre class="jsonCode">
+                            {
+                                "resultCode": 1,
+                                "content": "ok"
+                             }
+                        </pre>
+                    </div>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>
+<!--end /api/jobRun.json-->

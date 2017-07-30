@@ -1,0 +1,327 @@
+<!doctype html>
+<html>
+    <head>
+        <title>Scheduler</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf8" />
+
+        <link href='css/bootstrap.min.css' rel="stylesheet" />
+        <link href="css/bootstrap-table.min.css" rel="stylesheet">
+        <link href="css/bootstrapValidator.min.css" rel="stylesheet">
+        <link href="css/bootstrap-datetimepicker.min.css" rel="stylesheet">
+        <link href='css/common.css' rel="stylesheet" />
+
+        <script type="text/javascript" src="js/jquery.min.js"></script>
+        <script type="text/javascript" src="js/bootstrap.min.js"></script>
+        <script type="text/javascript" src="js/json2.min.js"></script>
+        <script type="text/javascript" src="js/bootbox.min.js" charset="utf8"></script>
+        <script type="text/javascript" src="js/doT.min.js" charset="utf8"></script>
+        <script src="js/bootstrap-table.min.js"></script>
+        <script src="js/bootstrap-table-zh-CN.min.js"></script>
+        <script src="js/bootstrapValidator.min.js"></script>
+        <script src="js/bootstrap-datetimepicker.min.js"></script>
+        <script src="js/zh_CN.min.js"></script>
+        <script type="text/javascript" src="js/common.js" charset="utf8"></script>
+    </head>
+    <body>
+        <div style="float:right;margin-right:20px;">
+            <h6><a class="langSelector" langNow="0">English</a> | <a class="langSelector" langNow="1">中文</a></h6>
+        </div>
+        <!--在jquery中用ajax加载导航信息-->
+        <div class="container">
+            <div id="banner">
+                <!--<h3>
+                    <a href="api/schedulerInfo.json" target="_blank" class="lang" langkey="ViewJSONAPI">JSON API</a>
+                </h3>-->
+            </div>
+            <div id="content">
+            </div>
+            <!-- 模板写到content外面防止被覆盖，正常情况覆盖没有问题，因为需要ajax重新加载所以在外面声明 -->
+            <script id="schedulerInfo-tmpl" type="text/x-dot-template">
+                {{~ it.content :schedulerInfo:i  }}
+                <div class="page-header">
+                    <h4>{{=schedulerInfo.schedulerName}}</h4>
+                </div>
+                <div class="row">
+                    <div class="col-lg-12">
+                        <table id="dataTable" class="table table-bordered table-condensed">
+                            <tr>
+                                <td width="220px;" class="text-center td_lable">scheduler name</td>
+                                <td class="text-left">
+                                    {{=schedulerInfo.schedulerName}}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td width="220px;" class="text-center td_lable">is shutdown</td>
+                                <td class="text-left">
+                                    {{=schedulerInfo.isShutdown}}
+
+                                    {{? !schedulerInfo.isShutdown }}
+                                    <a>
+                                        <a href="javascript:;"
+                                           onclick="javascript:quartzweb.scheduler.ajaxRequestForSchedulerShutdown('{{=schedulerInfo.schedulerName}}');">
+                                            shutdown(now)
+                                        </a>
+                                        <a href="javascript:;"
+                                           onclick="javascript:quartzweb.scheduler.ajaxRequestForSchedulerShutdownWait('{{=schedulerInfo.schedulerName}}');">
+                                            shutdown(wait for jobs to complete)
+                                        </a>
+                                    </a>
+                                    {{?}}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td width="220px;" class="text-center td_lable">is started</td>
+                                <td class="text-left">
+                                    {{=schedulerInfo.isStarted}}
+
+                                    {{? !schedulerInfo.isStarted }}
+                                        <a href="javascript:;"
+                                           onclick="javascript:quartzweb.scheduler.ajaxRequestForSchedulerStart('{{=schedulerInfo.schedulerName}}');">
+                                            start
+                                        </a>
+                                        <a href="javascript:;"
+                                           onclick="javascript:quartzweb.scheduler.ajaxRequestForSchedulerStartDelayed('{{=schedulerInfo.schedulerName}}');">
+                                            startDelayed
+                                        </a>
+                                    {{?}}
+
+                                </td>
+                            </tr>
+                            <tr>
+                                <td width="220px;" class="text-center td_lable">is in stand by mode</td>
+                                <td class="text-left">
+                                    {{=schedulerInfo.isInStandbyMode}}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td width="220px;" class="text-center td_lable">job count</td>
+                                <td class="text-left">
+                                    {{=schedulerInfo.jobCount}}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td width="220px;" class="text-center td_lable">trigger error count</td>
+                                <td class="text-left">
+                                    {{=schedulerInfo.triggerErrorCount}}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td width="220px;" class="text-center td_lable">trigger blocked count</td>
+                                <td class="text-left">
+                                    {{=schedulerInfo.triggerBlockedCount}}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td width="220px;" class="text-center td_lable">trigger paused count</td>
+                                <td class="text-left">
+                                    {{=schedulerInfo.triggerPausedCount}}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td width="220px;" class="text-center td_lable">scheduler conext</td>
+                                <td class="text-left">
+                                    {{? schedulerInfo.schedulerConext }}
+                                        {{~ schedulerInfo.schedulerConext :sc: j  }}
+                                            {{= sc.key }} = {{= sc.value }}<br>
+                                        {{~ }}
+                                    {{?}}
+
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+                {{~ }}
+            </script>
+        </div>
+
+        <!--脚部信息-->
+        <div id="footer"></div>
+
+        <script type="text/javascript">
+
+            $.namespace("quartzweb.scheduler");
+            quartzweb.scheduler = function () {
+                return {
+                    init: function (index) {
+                        // 加载头部
+                        quartzweb.common.createHeaderHTML(index);
+                        // 加载尾部
+                        quartzweb.common.createFooterHTML();
+                        // 请求scheduler信息
+                        quartzweb.scheduler.ajaxRequestForSchedulerInfo();
+                    },
+                    // ajax请求数据
+                    ajaxRequestForSchedulerInfo: function () {
+                        $.ajax({
+                            type: 'POST',
+                            url: "api/schedulerInfo.json",
+                            dataType: "json",
+                            success: function (data) {
+                                if (1 === data.resultCode) {
+                                    var tmpl = $('#schedulerInfo-tmpl').html();
+                                    var doTtmpl = doT.template(tmpl);
+                                    var contentHtml = doTtmpl(data);
+                                    $("#content").html(contentHtml);
+                                } else {
+                                    alert("system is error : " + data.content);
+                                }
+
+                            }
+                        });
+                    },
+                    // ajax启动
+                    ajaxRequestForSchedulerStart: function (schedulerName) {
+                        bootbox.confirm({
+                            title: '系统提示',
+                            message: '是否启动['+schedulerName+']',
+                            buttons: {
+                                confirm: {
+                                    label: 'OK',
+                                    className: ''
+                                },
+                                cancel: {
+                                    label: 'Cancel',
+                                }
+                            },
+                            callback: function (result) {
+                                if(result===true){
+                                    $.ajax({
+                                        type: 'POST',
+                                        url: "api/schedulerStart.json",
+                                        data:{
+                                            schedulerName:schedulerName
+                                        },
+                                        dataType: "json",
+                                        success: function (data) {
+                                            if (1 === data.resultCode) {
+                                                alert("ok");
+                                                quartzweb.scheduler.ajaxRequestForSchedulerInfo();
+                                            } else {
+                                                alert("system is error : " + data.content);
+                                            }
+
+                                        }
+                                    });
+                                }
+                            }
+                        });
+
+                    },
+                    //延迟启动
+                    ajaxRequestForSchedulerStartDelayed: function (schedulerName) {
+                        bootbox.prompt({
+                            title: '系统提示,输入秒数',
+                            callback: function(result){
+                                // result不为空，点击确定后提交
+                                if(result||result===""){
+                                    $.ajax({
+                                        type: 'POST',
+                                        url: "api/schedulerStartDelayed.json",
+                                        data:{
+                                            schedulerName:schedulerName,
+                                            delayed:result
+                                        },
+                                        dataType: "json",
+                                        success: function (data) {
+                                            if (1 === data.resultCode) {
+                                                alert("ok");
+                                                quartzweb.scheduler.ajaxRequestForSchedulerInfo();
+                                            } else {
+                                                alert("system is error : " + data.content);
+                                            }
+
+                                        }
+
+                                    });
+                                }
+                            }
+                        })
+
+                    },
+                    //停止
+                    ajaxRequestForSchedulerShutdown: function (schedulerName) {
+                        bootbox.confirm({
+                            title: '系统提示',
+                            message: '是否关闭['+schedulerName+'],关闭后无法重启启动',
+                            buttons: {
+                                confirm: {
+                                    label: 'OK',
+                                    className: ''
+                                },
+                                cancel: {
+                                    label: 'Cancel',
+                                }
+                            },
+                            callback: function (result) {
+                                if(result===true){
+                                    $.ajax({
+                                        type: 'POST',
+                                        url: "api/schedulerShutdown.json",
+                                        dataType: "json",
+                                        data:{
+                                            schedulerName:schedulerName
+                                        },
+                                        success: function (data) {
+                                            if (1 === data.resultCode) {
+                                                alert("ok");
+                                                quartzweb.scheduler.ajaxRequestForSchedulerInfo();
+                                            } else {
+                                                alert("system is error : " + data.content);
+                                            }
+
+                                        }
+                                    });
+                                }
+                            }
+                        });
+
+                    },
+                    //延迟停止
+                    ajaxRequestForSchedulerShutdownWait: function (schedulerName,delayed) {
+                        bootbox.confirm({
+                            title: '系统提示',
+                            message: '是否关闭['+schedulerName+'],关闭后无法重启启动',
+                            buttons: {
+                                confirm: {
+                                    label: 'OK',
+                                    className: ''
+                                },
+                                cancel: {
+                                    label: 'Cancel',
+                                }
+                            },
+                            callback: function (result) {
+                                if(result===true){
+                                    $.ajax({
+                                        type: 'POST',
+                                        url: "api/schedulerShutdownWait.json",
+                                        data:{
+                                            delayed:delayed,
+                                            schedulerName:schedulerName
+                                        },
+                                        dataType: "json",
+                                        success: function (data) {
+                                            if (1 === data.resultCode) {
+                                                alert("ok");
+                                                quartzweb.scheduler.ajaxRequestForSchedulerInfo();
+                                            } else {
+                                                alert("system is error : " + data.content);
+                                            }
+
+                                        }
+                                    });
+                                }
+                            }
+                        });
+                    },
+                };
+            }();
+
+            $(document).ready(function() {
+                quartzweb.scheduler.init(1);
+            });
+
+        </script>
+    </body>
+</html>

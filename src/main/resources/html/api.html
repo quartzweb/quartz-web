@@ -1,0 +1,212 @@
+<!doctype html>
+<html>
+<head>
+    <title>API</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf8" />
+
+    <link href='css/bootstrap.min.css' rel="stylesheet" />
+    <link href="css/bootstrap-table.min.css" rel="stylesheet">
+    <link href="css/bootstrapValidator.min.css" rel="stylesheet">
+    <link href="css/bootstrap-datetimepicker.min.css" rel="stylesheet">
+    <link href='css/common.css' rel="stylesheet" />
+
+    <script type="text/javascript" src="js/jquery.min.js"></script>
+    <script type="text/javascript" src="js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="js/json2.min.js"></script>
+    <script type="text/javascript" src="js/bootbox.min.js" charset="utf8"></script>
+    <script type="text/javascript" src="js/doT.min.js" charset="utf8"></script>
+    <script src="js/bootstrap-table.min.js"></script>
+    <script src="js/bootstrap-table-zh-CN.min.js"></script>
+    <script src="js/bootstrapValidator.min.js"></script>
+    <script src="js/bootstrap-datetimepicker.min.js"></script>
+    <script src="js/zh_CN.min.js"></script>
+    <script type="text/javascript" src="js/common.js" charset="utf8"></script>
+    <style>
+        /* Custom Styles */
+        ul.nav-tabs{
+            width: 160px;
+            margin-top: 50px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.067);
+        }
+        ul.nav-tabs li{
+            margin: 0;
+            border-top: 1px solid #ddd;
+        }
+        ul.nav-tabs li:first-child{
+            border-top: none;
+        }
+        ul.nav-tabs li a{
+            margin: 0;
+            padding: 8px 16px;
+            border-radius: 0;
+        }
+        ul.nav-tabs li.active a, ul.nav-tabs li.active a:hover{
+            color: #fff;
+            background: #0088cc;
+            border: 1px solid #0088cc;
+        }
+        ul.nav-tabs li:first-child a{
+            border-radius: 4px 4px 0 0;
+        }
+        ul.nav-tabs li:last-child a{
+            border-radius: 0 0 4px 4px;
+        }
+        ul.nav-tabs.affix{
+            top: 50px; /* Set the top position of pinned element */
+        }
+        ul.affix-top{
+            margin-top: 150px;
+        }
+
+        .dropdown-menu{
+            font-size: 13px;
+        }
+        .dropdown-menu > li > a{
+            color: #2fa4e7;
+        }
+        .dropdown-menu > li > a:hover,
+        .dropdown-menu > li > a:focus {
+            color: #157ab5;
+            background-color: #eeeeee;
+            border-bottom-color: transparent;
+        }
+        .dropdown-menu > li > a:hover {
+            border-color: #eeeeee #eeeeee #dddddd;
+        }
+        .dropdown-menu li.active a,
+        .dropdown-menu li.active a:hover{
+            color: #fff;
+            background: #0088cc;
+            border: 1px solid #0088cc;
+            padding: 8px 16px;
+
+        }
+        .dropdown-menu li.active a:focus {
+            background-color: #eeeeee;
+            border-color: #2fa4ef;
+        }
+    </style>
+</head>
+<body>
+    <div style="float:right;margin-right:20px;">
+        <h6><a class="langSelector" langNow="0">English</a> | <a class="langSelector" langNow="1">中文</a></h6>
+    </div>
+    <div style="float:right;margin-right:100px;" >
+        <ul class="nav nav-tabs nav-stacked" data-spy="affix" >
+            <li><a href="#commonResult.json">0.返回公共信息</a></li>
+            <li><a href="#basic.json">1.获取基础信息</a></li>
+            <li class="dropdown">
+                <a class="drople-toggle" data-toggle="dropdown" href="#">Scheduler[2-6]<span class="caret"></span></a>
+                <ul class="dropdown-menu">
+                    <li><a href="#schedulerInfo.json" data-stopPropagation="true" >2.获取Scheduler信息</a></li>
+                    <li><a href="#schedulerStart.json" data-stopPropagation="true" >3.启动Scheduler</a></li>
+                    <li><a href="#schedulerStartDelayed.json" data-stopPropagation="true" >4.延迟启动Scheduler</a></li>
+                    <li><a href="#schedulerShutdown.json" data-stopPropagation="true" >5.停止Scheduler</a></li>
+                    <li><a href="#schedulerShutdownWait.json" data-stopPropagation="true" >6.等待job停止Scheduler</a></li>
+                </ul>
+            </li>
+            <li class="dropdown">
+                <a class="drople-toggle" data-toggle="dropdown" href="#">Job[7-12]<span class="caret"></span></a>
+                <ul class="dropdown-menu">
+                    <li><a href="#jobInfo.json" data-stopPropagation="true" >7.获取Job信息</a></li>
+                    <li><a href="#jobAdd.json" data-stopPropagation="true" >8.添加Job</a></li>
+                    <li><a href="#jobResume.json" data-stopPropagation="true" >9.重启Job</a></li>
+                    <li><a href="#jobRemove.json" data-stopPropagation="true" >10.移除Job</a></li>
+                    <li><a href="#jobPause.json" data-stopPropagation="true" >11.暂停Job</a></li>
+                    <li><a href="#jobRun.json" data-stopPropagation="true" >12.运行Job</a></li>
+                </ul>
+            </li>
+            <li class="dropdown">
+                <a class="drople-toggle" data-toggle="dropdown" href="#">Trigger[13-18]<span class="caret"></span></a>
+                <ul class="dropdown-menu">
+                    <li><a href="#triggerInfo.json" data-stopPropagation="true" >13.获取Trigger信息</a></li>
+                    <li><a href="#triggerAdd.json" data-stopPropagation="true" >14.添加Trigger</a></li>
+                    <li><a href="#triggerResume.json" data-stopPropagation="true" >15.重启Trigger</a></li>
+                    <li><a href="#triggerRemove.json" data-stopPropagation="true" >16.移除Trigger</a></li>
+                    <li><a href="#triggerPause.json" data-stopPropagation="true" >17.暂停Trigger</a></li>
+                    <li><a href="#triggerRun.json" data-stopPropagation="true" >18.运行Trigger</a></li>
+                </ul>
+            </li>
+            <li class="dropdown">
+                <a class="drople-toggle" data-toggle="dropdown" href="#">校验[19-24]<span class="caret"></span></a>
+                <ul class="dropdown-menu">
+                    <li><a href="#validateClass.json" data-stopPropagation="true" >19.校验系统class是否存在</a></li>
+                    <li><a href="#classInfo.json" data-stopPropagation="true" >20.获取class信息</a></li>
+                    <li><a href="#assignable.json" data-stopPropagation="true" >21.校验是否继承</a></li>
+                    <li><a href="#validateJob.json" data-stopPropagation="true" >22.校验Job合法性</a></li>
+                    <li><a href="#validateTrigger.json" data-stopPropagation="true" >23.校验Trigger合法性</a></li>
+                    <li><a href="#validateCronExpression.json" data-stopPropagation="true" >24.校验Cron表达式是否合法</a></li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+    <!--在jquery中用ajax加载导航信息-->
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-10">
+
+                <!--基础API-->
+                <div id="basicApi"></div>
+
+                <!--scheduler api-->
+                <div id="schedulerApi"></div>
+
+                <!--jobApi-->
+                <div id="jobApi"></div>
+
+                <div id="triggerApi"></div>
+
+                <div id="validateApi"></div>
+            </div>
+        </div>
+
+    </div>
+
+    <!--脚部信息-->
+    <div id="footer"></div>
+
+    <script type="text/javascript">
+
+        $.namespace("quartzweb.api");
+        quartzweb.api = function () {
+            return {
+                init: function (index) {
+                    // 加载头部
+                    quartzweb.common.createHeaderHTML(index);
+                    // 加载尾部
+                    quartzweb.common.createFooterHTML();
+                    quartzweb.common.createHTML("basicApi","apiBasic.html");
+                    quartzweb.common.createHTML("schedulerApi","apiScheduler.html");
+                    quartzweb.common.createHTML("jobApi","apiJob.html");
+                    quartzweb.common.createHTML("triggerApi","apiTrigger.html");
+                    quartzweb.common.createHTML("validateApi","apiValidate.html");
+                    //格式化json
+                    $(".jsonCode").each(function () {
+                        var jsonHtml = $(this).html();
+                        jsonHtml = JSON.parse(jsonHtml);
+                        jsonHtml = JSON.stringify(jsonHtml, null, 2);
+                        $(this).text(jsonHtml);
+                    });
+                    //停止dropdown-menu的点击事件传播
+                    /*$('.dropdown-menu a').click(function(e) {
+                        e.stopPropagation();
+                    });*/
+                    $("ul.dropdown-menu").on("click", "[data-stopPropagation]", function(e) {
+                        e.stopPropagation();
+                    });
+                }
+
+            };
+        }();
+
+        $(document).ready(function () {
+
+            quartzweb.api.init(3);
+
+        });
+
+    </script>
+</body>
+</html>

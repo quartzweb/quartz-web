@@ -1,0 +1,43 @@
+body {
+    padding-top: 50px;
+    font-family: Helvetica, Georgia, Arial, sans-serif, 宋体;
+    font-size: 13px;
+}
+
+body>.navbar {
+    -webkit-transition: background-color .3s ease-in;
+    transition: background-color .3s ease-in;
+}
+
+a {
+    cursor: pointer;
+}
+
+#banner {
+    border-bottom: none;
+    margin-bottom: 2em;
+}
+
+.dataTable th > a {
+    color: #555555;
+}
+.dataTable th {
+    background-color: #E5E5E5;
+    border-bottom-color: #FFC40D;
+    color: #555555;
+   /* cursor: pointer;*/
+}
+
+.td_lable {
+    font-weight: bold;
+    width: 220px;
+    background-color: #E5E5E5;
+}
+
+.footer {
+    background-color: #F5F5F5;
+    border-top: 1px solid #E5E5E5;
+    margin-top: 10px;
+    padding: 20px 0;
+}
+

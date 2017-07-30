@@ -1,0 +1,424 @@
+<!doctype html>
+<html>
+<head>
+    <title>Trigger</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf8" />
+
+    <link href='css/bootstrap.min.css' rel="stylesheet" />
+    <link href="css/bootstrap-table.min.css" rel="stylesheet">
+    <link href="css/bootstrapValidator.min.css" rel="stylesheet">
+    <link href="css/bootstrap-datetimepicker.min.css" rel="stylesheet">
+    <link href='css/common.css' rel="stylesheet" />
+
+    <script type="text/javascript" src="js/jquery.min.js"></script>
+    <script type="text/javascript" src="js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="js/json2.min.js"></script>
+    <script type="text/javascript" src="js/bootbox.min.js" charset="utf8"></script>
+    <script type="text/javascript" src="js/doT.min.js" charset="utf8"></script>
+    <script src="js/bootstrap-table.min.js"></script>
+    <script src="js/bootstrap-table-zh-CN.min.js"></script>
+    <script src="js/bootstrapValidator.min.js"></script>
+    <script src="js/bootstrap-datetimepicker.min.js"></script>
+    <script src="js/zh_CN.min.js"></script>
+    <script type="text/javascript" src="js/common.js" charset="utf8"></script>
+</head>
+<body>
+<div style="float:right;margin-right:20px;">
+    <h6><a class="langSelector" langNow="0">English</a> | <a class="langSelector" langNow="1">中文</a></h6>
+</div>
+<!--在jquery中用ajax加载导航信息-->
+<div class="container">
+    <div id="banner">
+        <!--<h3>-->
+        <!--&lt;!&ndash; <a href="api/jobInfo.json" target="_blank" class="lang" langkey="ViewJSONAPI">JSON API</a>&ndash;&gt;-->
+        <!--</h3>-->
+    </div>
+    <div id="content">
+        <div class="page-header">
+            <!--  <h4>
+                  {{= schedulerJob }}<a href="jobAdd.html">添加</a>
+              </h4>-->
+        </div>
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="well">
+                    <form class="form-horizontal" id="dataForm" action="api/triggerAdd.json?">
+                        <fieldset>
+                            <legend>Trigger Add</legend>
+                            <div class="form-group">
+                                <label for="schedulerName" class="col-lg-2 control-label">
+                                    SchedulerName<span style="color: red">*</span>
+                                </label>
+                                <div class="col-lg-9">
+                                    <input type="hidden" class="form-control" name="checkTrigger" id="checkTrigger" />
+                                    <input type="text" class="form-control" id="schedulerName" name="schedulerName" readonly="readonly">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="jobName" class="col-lg-2 control-label">
+                                    jobName<span style="color: red">*</span>
+                                </label>
+                                <div class="col-lg-9">
+                                    <input type="text" class="form-control" id="jobName" name="jobName" readonly="readonly">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="jobGroup" class="col-lg-2 control-label">
+                                    jobGroup<span style="color: red">*</span>
+                                </label>
+                                <div class="col-lg-9">
+                                    <input type="text" class="form-control" id="jobGroup" name="jobGroup" readonly="readonly">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="triggerName" class="col-lg-2 control-label">
+                                    trigger name<span style="color: red">*</span>
+                                </label>
+                                <div class="col-lg-9">
+                                    <input type="text" class="form-control" id="triggerName" name="triggerName">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="triggerGroup" class="col-lg-2 control-label">
+                                    trigger group<span style="color: red">*</span>
+                                </label>
+                                <div class="col-lg-9">
+                                    <input type="text" class="form-control" id="triggerGroup" name="triggerGroup">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="cronExpression" class="col-lg-2 control-label">
+                                    cron expression<span style="color: red">*</span>
+                                </label>
+                                <div class="col-lg-9">
+                                    <input type="text" class="form-control" id="cronExpression" name="cronExpression">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="cronExpression" class="col-lg-2 control-label">
+                                    start date
+                                </label>
+                                <div class="col-lg-9">
+                                    <input type="text" class="form-control" id="startDate" name="startDate" readonly="readonly">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="cronExpression" class="col-lg-2 control-label">
+                                    end date
+                                </label>
+                                <div class="col-lg-9">
+                                    <input type="text" class="form-control" id="endDate" name="endDate" readonly="readonly">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="priority" class="col-lg-2 control-label">
+                                    priority
+                                </label>
+                                <div class="col-lg-9">
+                                    <input type="number" class="form-control" id="priority" name="priority">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="description" class="col-lg-2 control-label">
+                                    description
+                                </label>
+                                <div class="col-lg-9">
+                                    <input type="text" class="form-control" id="description" >
+                                </div>
+                            </div>
+                            <div class="form-group" id="jobDataMapFormGroup">
+                                <label class="col-lg-2 control-label">
+                                    jobDataMap
+                                    <input id="jobDataMapIndex" value="0" type="hidden">
+                                    <a href="javascript:;" onclick="quartzweb.triggerAdd.jobDataMapAdd()">
+                                        <span class="glyphicon glyphicon-plus"></span>
+                                    </a>
+                                </label>
+                                <div class="col-lg-9" id="jobDataMap">
+                                    <div class="row" style="margin-bottom:10px;">
+                                        <div class="col-xs-5 col-md-5 col-lg-5">
+                                            <input type="text" class="form-control" name="jobDataMapKey_0" placeholder="key">
+                                        </div>
+                                        <div class="col-xs-5 col-md-5 col-lg-5">
+                                            <input type="text" class="form-control" name="jobDataMapValue_0" placeholder="value">
+                                        </div>
+                                        <div class="col-xs-1 col-md-1 col-lg-1">
+                                            <a href="javascript:;" onclick="quartzweb.triggerAdd.jobDataMapDel(this)">
+                                                <span class="glyphicon glyphicon-minus"></span>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!--jobMap增加模板-->
+                                <script id="jobDataMapRow-tmpl" type="text/x-dot-template">
+                                    <div class="row" style="margin-bottom:10px;">
+                                        <div class="col-xs-5 col-md-5 col-lg-5">
+                                            <input type="text" class="form-control" name="jobDataMapKey_{{= it.index}}" placeholder="key">
+                                        </div>
+                                        <div class="col-xs-5 col-md-5 col-lg-5">
+                                            <input type="text" class="form-control" name="jobDataMapValue_{{= it.index}}" placeholder="value">
+                                        </div>
+                                        <div class="col-xs-1 col-md-1 col-lg-1">
+                                            <a href="javascript:;" onclick="quartzweb.triggerAdd.jobDataMapDel(this)">
+                                                <span class="glyphicon glyphicon-minus"></span>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </script>
+                            </div>
+                            <div class="form-group">
+                                <div class="col-lg-10 col-lg-offset-2">
+                                    <button type="reset" class="btn btn-default">Cancel</button>
+                                    <button type="submit" class="btn btn-primary">Submit</button>
+                                </div>
+                            </div>
+                        </fieldset>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--脚部信息-->
+<div id="footer"></div>
+
+<script type="text/javascript">
+
+    $.namespace("quartzweb.triggerAdd");
+    quartzweb.triggerAdd = function () {
+        return {
+            init: function (index) {
+                // 加载头部
+                quartzweb.common.createHeaderHTML(index);
+                // 加载尾部
+                quartzweb.common.createFooterHTML();
+                // 设置变量名称
+                var schedulerName = quartzweb.common.getWindowhrefVar("schedulerName");
+                var jobName = quartzweb.common.getWindowhrefVar("jobName");
+                var jobGroup = quartzweb.common.getWindowhrefVar("jobGroup");
+                $("#schedulerName").val(schedulerName);
+                $("#jobName").val(jobName);
+                $("#jobGroup").val(jobGroup);
+                // 校验表单
+                quartzweb.triggerAdd.validator();
+                quartzweb.triggerAdd.datetimepickerFmt();
+                var type = quartzweb.common.getWindowhrefVar("type");
+                if(type ==="modify"){
+                    var triggerName = quartzweb.common.getWindowhrefVar("triggerName");
+                    var triggerGroup = quartzweb.common.getWindowhrefVar("triggerGroup");
+                    $("#triggerName").val(triggerName);
+                    $("#triggerGroup").val(triggerGroup);
+                    $("#triggerName").attr("readOnly", "readOnly");
+                    $("#triggerGroup").attr("readOnly", "readOnly");
+                }
+            },
+            validator:function () {
+                $("#dataForm").bootstrapValidator({
+                    excluded:[":disabled"],
+                    feedbackIcons: {/*输入框不同状态，显示图片的样式*/
+                        valid: 'glyphicon glyphicon-ok',
+                        invalid: 'glyphicon glyphicon-remove',
+                        validating: 'glyphicon glyphicon-refresh'
+                    },
+                    fields: {
+                        /*验证*/
+                        schedulerName :{
+                            validators : {
+                                notEmpty: {
+                                }
+                            }
+                        },
+                        triggerName :{
+                            validators : {
+                                notEmpty: {
+                                }
+                            }
+                        },
+                        triggerGroup :{
+                            validators : {
+                                notEmpty: {
+                                }
+                            }
+                        },
+                        priority:{
+                            validators : {
+                                integer: {
+                                }
+                            }
+                        },
+                        cronExpression :{
+                            validators : {
+                                notEmpty: {
+                                },
+                                callback: {
+                                    message: 'cron expression is error',
+                                    callback: function(fieldValue, validator, $field) {
+                                        //var json = JSON.parse(fieldValue);
+                                        var flag = false;
+                                        if(fieldValue!==""){
+                                            $.ajax({
+                                                type: 'POST',
+                                                url: "api/validateCronExpression.json",
+                                                async: false,
+                                                data: {
+                                                    cronExpression: fieldValue
+                                                },
+                                                dataType: "json",
+                                                success: function (data) {
+                                                    if (1 === data.resultCode) {
+                                                        // 校验成功
+                                                        if(data.content.result === true) {
+                                                            flag = true;
+                                                        } else {
+                                                            flag = false
+                                                        }
+                                                    } else {
+                                                        alert("system is error : " + data.content);
+                                                        flag = false;
+                                                    }
+                                                }
+                                            });
+                                        } else {
+                                            flag = true;
+                                        }
+                                        return flag;
+                                    }
+                                }
+                            }
+                        },
+                        checkTrigger:{
+                            validators: {
+                                callback: {
+                                    message: 'trigger exist',
+                                    callback: function(fieldValue, validator, $field) {
+                                        //var json = JSON.parse(fieldValue);
+                                        var flag = false;
+                                        var schedulerName = $("#schedulerName").val();
+                                        var triggerName = $("#triggerName").val();
+                                        var triggerGroup = $("#triggerGroup").val();
+                                        if(schedulerName!==""&&triggerName!==""&&triggerGroup!==""){
+                                            var type = quartzweb.common.getWindowhrefVar("type");
+                                            if(type==="modify"){
+                                                return true;
+                                            }
+                                            $.ajax({
+                                                type: 'POST',
+                                                url: "api/validateTrigger.json",
+                                                async: false,
+                                                data: {
+                                                    schedulerName: schedulerName,
+                                                    triggerName: triggerName,
+                                                    triggerGroup: triggerGroup
+                                                },
+                                                dataType: "json",
+                                                success: function (data) {
+                                                    if (1 === data.resultCode) {
+                                                        // 校验成功
+                                                        if(data.content.result === true) {
+                                                            flag = false;
+                                                        } else {
+                                                            flag = true
+                                                        }
+                                                    } else {
+                                                        alert("system is error : " + data.content);
+                                                        flag = false;
+                                                    }
+                                                }
+                                            });
+                                        } else {
+                                            flag = true;
+                                        }
+                                        return flag;
+                                    }
+                                }
+                            }
+                        },
+                    }
+                }).on('success.form.bv', function(e) {
+                    // Prevent form submission
+                    e.preventDefault();
+                    // Get the form instance
+                    var $form = $(e.target);
+
+                    // Get the BootstrapValidator instance
+                    //var bv = $form.data('bootstrapValidator');
+                    //var data = $form.serializeArray()
+                    //console.log(JSON.stringify(data))
+
+                    // Use Ajax to submit form data
+                    $.post($form.attr('action'), $form.serialize(), function(data) {
+                        if (1 === data.resultCode) {
+                            if(data.content === "ok") {
+                                //alert("ok");
+                                window.location.href = "job.html";
+                            } else {
+                                alert("system is error : " + data.content.result);
+                            }
+                        }else{
+                            alert("system is error : " + data.content);
+                        }
+                    }, 'json');
+                });
+
+                // 判断多个字段
+                $('#dataForm').on('keyup', 'input[name="schedulerName"], input[name="triggerName"], input[name="triggerGroup"]', function(e) {
+                    var schedulerName = $('#dataForm').find('[name="schedulerName"]').val(),
+                        triggerName = $('#dataForm').find('[name="triggerName"]').val(),
+                        triggerGroup = $('#dataForm').find('[name="triggerGroup"]').val();
+                    var checkTriggerValue = {
+                        schedulerName:schedulerName,
+                        triggerName:triggerName,
+                        triggerGroup:triggerGroup
+                    };
+//                    // Set the dob field value
+                    $('#dataForm').find('[name="checkTrigger"]').val(JSON.stringify(checkTriggerValue));
+
+                    // Revalidate it
+                    if(schedulerName!=""&&triggerName!=null&&triggerGroup!=null){
+                        $('#dataForm').bootstrapValidator('revalidateField', "checkTrigger");
+                    }
+
+                });
+            },
+            datetimepickerFmt:function () {
+                $("#endDate, #startDate").datetimepicker({
+                    format:'yyyy-mm-dd hh:ii:00',
+                    weekStart: 1,
+                    todayBtn:  1,
+                    autoclose: 1,
+                    todayHighlight: 1,
+                    startView: 2,
+                    forceParse: 0,
+                    showSecond:1,
+                    // 每分钟
+                    minuteStep:1
+                    //secondStep: 1
+
+                });
+            },
+            // job列添加一行
+            jobDataMapAdd: function(){
+                var index = $("#jobDataMapIndex").val();
+                index++;
+                $("#jobDataMapIndex").val(index);
+                var json = {"index":index}
+                var tmpl = $('#jobDataMapRow-tmpl').html();
+                var doTtmpl = doT.template(tmpl);
+                var contentHtml = doTtmpl(json);
+                $("#jobDataMap").append(contentHtml);
+            },
+            // job列删除一行
+            jobDataMapDel: function(obj){
+                $(obj).parent().parent().remove();
+            },
+        };
+    }();
+
+    $(document).ready(function() {
+        quartzweb.triggerAdd.init(2);
+    });
+
+</script>
+</body>
+</html>

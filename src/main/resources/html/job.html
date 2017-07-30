@@ -1,0 +1,443 @@
+<!doctype html>
+<html>
+    <head>
+        <title>Job</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf8" />
+
+        <link href='css/bootstrap.min.css' rel="stylesheet" />
+        <link href="css/bootstrap-table.min.css" rel="stylesheet">
+        <link href="css/bootstrapValidator.min.css" rel="stylesheet">
+        <link href="css/bootstrap-datetimepicker.min.css" rel="stylesheet">
+        <link href='css/common.css' rel="stylesheet" />
+
+        <script type="text/javascript" src="js/jquery.min.js"></script>
+        <script type="text/javascript" src="js/bootstrap.min.js"></script>
+        <script type="text/javascript" src="js/json2.min.js"></script>
+        <script type="text/javascript" src="js/bootbox.min.js" charset="utf8"></script>
+        <script type="text/javascript" src="js/doT.min.js" charset="utf8"></script>
+        <script src="js/bootstrap-table.min.js"></script>
+        <script src="js/bootstrap-table-zh-CN.min.js"></script>
+        <script src="js/bootstrapValidator.min.js"></script>
+        <script src="js/bootstrap-datetimepicker.min.js"></script>
+        <script src="js/zh_CN.min.js"></script>
+        <script type="text/javascript" src="js/common.js" charset="utf8"></script>
+    </head>
+    <body>
+        <div style="float:right;margin-right:20px;">
+            <h6><a class="langSelector" langNow="0">English</a> | <a class="langSelector" langNow="1">中文</a></h6>
+        </div>
+        <!--在jquery中用ajax加载导航信息-->
+        <div class="container">
+            <div id="banner">
+                <!--<h3>
+                    <a href="api/jobInfo.json" target="_blank" class="lang" langkey="ViewJSONAPI">JSON API</a>
+                </h3>-->
+            </div>
+            <div id="content">
+            </div>
+            <!-- 模板写到content外面防止被覆盖，正常情况覆盖没有问题，因为需要ajax重新加载所以在外面声明 -->
+            <script id="jobInfo-tmpl" type="text/x-dot-template">
+                {{ for(var schedulerJob in it.content) { }}
+                    <div class="page-header">
+                        <h4>
+                            {{= schedulerJob }}<a href="jobAdd.html?schedulerName={{= schedulerJob }}"> add job</a>
+                        </h4>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <table id="{{= schedulerJob }}" data-toggle="table" class="table table-striped table-bordered dataTableJob">
+                                <thead>
+                                    <tr>
+                                        <th>jobName</th>
+                                        <th>jobGroup</th>
+                                        <th>jobClass</th>
+                                        <th>isConcurrentExectionDisallowed</th>
+                                        <th>isDurable</th>
+                                        <th>isPersistJobDataAfterExecution</th>
+                                        <th>jobDataMap</th>
+                                        <th>description</th>
+                                        <th>operation</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {{~ it.content[schedulerJob] :jobInfo:i  }}
+                                        <tr id="{{= schedulerJob }}_{{= i}}" >
+                                            <td>
+                                                <a id="{{= schedulerJob }}_{{= i}}_a" href="api/triggerInfo.json?jobName={{= jobInfo.jobName }}&jobGroup={{= jobInfo.jobGroup }}&schedulerName={{= schedulerJob }}">
+                                                    {{= jobInfo.jobName }}
+                                                </a>
+                                            </td>
+                                            <td>
+                                                {{= jobInfo.jobGroup }}
+                                            </td>
+                                            <td>
+                                                {{= jobInfo.jobClass }}
+                                            </td>
+                                            <td>
+                                                {{= jobInfo.isConcurrentExectionDisallowed }}
+                                            </td>
+                                            <td>
+                                                {{= jobInfo.isDurable }}
+                                            </td>
+                                            <td>
+                                                {{= jobInfo.isPersistJobDataAfterExecution }}
+                                            </td>
+                                            <td>
+                                                {{ for(var dataMapKey in jobInfo.jobDataMap) { }}
+                                                    {{? dataMapKey.length}}
+                                                        {{= dataMapKey }}={{= jobInfo.jobDataMap[dataMapKey] }}<br>
+                                                    {{?}}
+                                                {{ }}}
+                                            </td>
+                                            <td>
+                                                {{= jobInfo.description }}
+                                            </td>
+                                            <td>
+                                                <a href="jobAdd.html?schedulerName={{= schedulerJob }}&jobName={{= jobInfo.jobName }}&jobGroup={{= jobInfo.jobGroup }}&type=modify">
+                                                    modify|
+                                                </a>
+                                                <a href="triggerAdd.html?schedulerName={{= schedulerJob }}&jobName={{= jobInfo.jobName }}&jobGroup={{= jobInfo.jobGroup }}">
+                                                    add trigger|
+                                                </a>
+                                                <a href="trigger.html?schedulerName={{= schedulerJob }}&jobName={{= jobInfo.jobName }}&jobGroup={{= jobInfo.jobGroup }}&jobClass={{= jobInfo.jobClass }}">
+                                                    trigger manager|
+                                                </a>
+                                                <a  href="javascript:;"
+                                                    onclick="javascript:quartzweb.job.ajaxRequestForJobPause('{{= schedulerJob }}','{{= jobInfo.jobName }}','{{= jobInfo.jobGroup }}')">
+                                                    pause|
+                                                </a>
+                                                <a  href="javascript:;"
+                                                    onclick="javascript:quartzweb.job.ajaxRequestForJobResume('{{= schedulerJob }}','{{= jobInfo.jobName }}','{{= jobInfo.jobGroup }}')">
+                                                    resume|
+                                                </a>
+                                                <a  href="javascript:;"
+                                                    onclick="javascript:quartzweb.job.ajaxRequestForJobRemove('{{= schedulerJob }}','{{= jobInfo.jobName }}','{{= jobInfo.jobGroup }}')">
+                                                    remove|
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    {{~ }}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                {{ }}}
+            </script>
+
+            <script id="triggerInfo-tmpl" type="text/x-dot-template">
+                <table class="table table-striped table-bordered dataTable">
+                    <thead>
+                    <tr>
+                        <th>triggerName</th>
+                        <th>triggerGroup</th>
+                        <th>cronExpression</th>
+                        <th>triggerState</th>
+                       <!-- <th>previousFireTime</th>-->
+                        <th>nextFireTime</th>
+                        <!--<th>priority</th>
+                        <th>startTime</th>
+                        <th>endTime</th>
+                        <th>misfireInstruction</th>
+                        <th>finalFireTime</th>
+                        <th>fireTimeAfter</th>
+                        <th>calendarName</th>-->
+                        <th>description</th>
+                        <th>operation</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {{~ it.content :triggerInfo:i  }}
+                    <tr>
+                        <td>{{= triggerInfo.triggerName}}</td>
+                        <td>{{= triggerInfo.triggerGroup}}</td>
+                        <td>{{= triggerInfo.cronExpression}}</td>
+                        <td>{{= triggerInfo.triggerState}}</td>
+                       <!-- <td>{{= triggerInfo.previousFireTime}}</td>-->
+                        <td>{{= triggerInfo.nextFireTime}}</td>
+                       <!-- <td>{{= triggerInfo.priority}}</td>
+                        <td>{{= triggerInfo.startTime}}</td>
+                        <td>{{= triggerInfo.endTime}}</td>
+                        <td>{{= triggerInfo.misfireInstruction}}</td>
+                        <td>{{= triggerInfo.finalFireTime}}</td>
+                        <td>{{= triggerInfo.fireTimeAfter}}</td>
+                        <td>{{= triggerInfo.calendarName}}</td>-->
+                        <td>{{= triggerInfo.description}}</td>
+                        <td>
+                            <a  href="javascript:;"
+                                onclick="javascript:quartzweb.job.ajaxRequestForTriggerRun('{{= triggerInfo.schedulerName }}','{{= triggerInfo.triggerName }}','{{= triggerInfo.triggerGroup }}')">
+                                run
+                            </a>
+                        </td>
+                    </tr>
+                    {{~ }}
+                    </tbody>
+                </table>
+            </script>
+        </div>
+
+        <!--脚部信息-->
+        <div id="footer"></div>
+
+        <script type="text/javascript">
+
+            $.namespace("quartzweb.job");
+            quartzweb.job = function () {
+                return {
+                    init: function (index) {
+                        // 加载头部
+                        quartzweb.common.createHeaderHTML(index);
+                        // 加载尾部
+                        quartzweb.common.createFooterHTML();
+                        // 请求Job信息
+                        quartzweb.job.ajaxRequestForJobInfo();
+                    },
+                    // ajax请求数据
+                    ajaxRequestForJobInfo: function () {
+                        $.ajax({
+                            type: 'POST',
+                            url: "api/jobInfo.json",
+                            success: function (data) {
+                                if (1 === data.resultCode) {
+                                    var tmpl = $('#jobInfo-tmpl').html();
+                                    var doTtmpl = doT.template(tmpl);
+                                    var contentHtml = doTtmpl(data);
+                                    $("#content").html(contentHtml);
+                                    // 设置bootstrap table样式
+                                    $(".dataTableJob").bootstrapTable({
+                                        detailView:true,
+                                        search: true,  //是否显示搜索框功能
+                                        pagination: true,  //是否分页
+                                        pageList:[10,25,50,100],
+                                        striped:true,//隔行变成色
+                                        showToggle: true,
+                                        showColumns: true
+
+                                    });
+
+                                    //isConcurrentExectionDisallowed
+                                    $(".dataTableJob").bootstrapTable('hideColumn',3);
+                                    //isDurable
+                                    $(".dataTableJob").bootstrapTable('hideColumn',4);
+                                    //isPersistJobDataAfterExecution
+                                    $(".dataTableJob").bootstrapTable('hideColumn',5);
+
+
+                                    $(".dataTableJob").on('expand-row.bs.table', function(e, index, row, $detail) {
+                                        // 行ID
+                                        var trId = this.id + "_" + index;
+                                        // 获取该行的a标签ID
+                                        var traId = trId + "_a";
+                                        // 获取href信息
+                                        var href = $("#" + traId).attr("href");
+                                        //
+                                        var schedulerName = quartzweb.common.getUrlVar(href, "schedulerName");
+                                        // 获取jobName
+                                        var jobName = quartzweb.common.getUrlVar(href, "jobName");
+                                        var jobGroup = quartzweb.common.getUrlVar(href, "jobGroup");
+                                        // 请求列数据
+                                        quartzweb.job.ajaxRequestForTriggerInfoToColumn(schedulerName, jobName, jobGroup, $detail);
+                                    });
+
+                                } else {
+                                    alert("system is error : " + data.content);
+                                }
+
+                            },
+                            dataType: "json"
+                        });
+                    },
+                    ajaxRequestForTriggerInfoToColumn: function (schedulerName, jobName, jobGroup, $detail) {
+
+                        $.ajax({
+                            type: 'POST',
+                            url: "api/triggerInfo.json",
+                            data:{
+                                schedulerName:schedulerName,
+                                jobName:jobName,
+                                jobGroup:jobGroup
+                            },
+                            success: function (data) {
+                                if (1 === data.resultCode) {
+
+                                    var tmpl = $('#triggerInfo-tmpl').html();
+                                    var doTtmpl = doT.template(tmpl);
+                                    var contentHtml = doTtmpl(data);
+                                    $detail.html(contentHtml);
+                                } else {
+                                    alert("system is error : " + data.content);
+                                }
+                            },
+                            dataType: "json"
+                        })
+                    },
+                    // 重启job
+                    ajaxRequestForJobResume:function (schedulerName,jobName,jobGroup) {
+                        bootbox.confirm({
+                            title: '系统提示',
+                            message: '确定要重启['+jobName+':'+jobGroup+']',
+                            buttons: {
+                                confirm: {
+                                    label: 'OK',
+                                    className: ''
+                                },
+                                cancel: {
+                                    label: 'Cancel',
+                                }
+                            },
+                            callback: function (result) {
+                                if(result===true){
+                                    $.ajax({
+                                        type: 'POST',
+                                        url: 'api/jobResume.json',
+                                        dataType: "json",
+                                        data:{
+                                            schedulerName:schedulerName,
+                                            jobName:jobName,
+                                            jobGroup:jobGroup
+                                        },
+                                        success: function(data) {
+                                            if(1 === data.resultCode){
+                                                alert("ok");
+                                                // 请求Job信息
+                                                quartzweb.job.ajaxRequestForJobInfo();
+                                            } else {
+                                                alert("system is error:" + data.content);
+                                            }
+                                        }
+
+                                    });
+                                }
+                            }
+                        });
+                    },
+                    //暂停trigger
+                    ajaxRequestForJobPause:function (schedulerName,jobName,jobGroup) {
+                        bootbox.confirm({
+                            title: '系统提示',
+                            message: '确定要暂停['+jobName+':'+jobGroup+']',
+                            buttons: {
+                                confirm: {
+                                    label: 'OK',
+                                    className: ''
+                                },
+                                cancel: {
+                                    label: 'Cancel',
+                                }
+                            },
+                            callback: function (result) {
+                                if(result===true){
+                                    $.ajax({
+                                        type: 'POST',
+                                        url: 'api/jobPause.json',
+                                        dataType: "json",
+                                        data:{
+                                            schedulerName:schedulerName,
+                                            jobName:jobName,
+                                            jobGroup:jobGroup
+                                        },
+                                        success: function(data) {
+                                            if(1 === data.resultCode){
+                                                alert("ok");
+                                                // 请求Job信息
+                                                quartzweb.job.ajaxRequestForJobInfo();
+                                            } else {
+                                                alert("system is error:" + data.content);
+                                            }
+                                        }
+
+                                    });
+                                }
+                            }
+                        });
+                    },
+                    ajaxRequestForJobRemove:function (schedulerName,jobName,jobGroup) {
+                        bootbox.confirm({
+                            title: '系统提示',
+                            message: '确定要移除['+jobName+':'+jobGroup+']',
+                            buttons: {
+                                confirm: {
+                                    label: 'OK',
+                                    className: ''
+                                },
+                                cancel: {
+                                    label: 'Cancel',
+                                }
+                            },
+                            callback: function (result) {
+                                if(result===true){
+                                    $.ajax({
+                                        type: 'POST',
+                                        url: 'api/jobRemove.json',
+                                        dataType: "json",
+                                        data:{
+                                            schedulerName:schedulerName,
+                                            jobName:jobName,
+                                            jobGroup:jobGroup
+                                        },
+                                        success: function(data) {
+                                            if(1 === data.resultCode){
+                                                alert("ok");
+                                                // 请求Job信息
+                                                quartzweb.job.ajaxRequestForJobInfo();
+                                            } else {
+                                                alert("system is error:" + data.content);
+                                            }
+                                        }
+
+                                    });
+                                }
+                            }
+                        });
+                    },
+                    // trigger立即执行一次
+                    ajaxRequestForTriggerRun:function (schedulerName,triggerName,triggerGroup) {
+                        bootbox.confirm({
+                            title: '系统提示',
+                            message: '确定要立即执行['+triggerName+':'+triggerGroup+']',
+                            buttons: {
+                                confirm: {
+                                    label: 'OK',
+                                    className: ''
+                                },
+                                cancel: {
+                                    label: 'Cancel',
+                                }
+                            },
+                            callback: function (result) {
+                                if(result===true){
+                                    $.ajax({
+                                        type: 'POST',
+                                        url: 'api/triggerRun.json',
+                                        dataType: "json",
+                                        data:{
+                                            schedulerName:schedulerName,
+                                            triggerName:triggerName,
+                                            triggerGroup:triggerGroup
+                                        },
+                                        success: function(data) {
+                                            if(1 === data.resultCode){
+                                                alert("ok");
+                                                var schedulerName = $("#schedulerName").val();
+                                                var jobName = $("#jobName").val();
+                                                var jobGroup = $("#jobGroup").val();
+                                                quartzweb.trigger.ajaxRequestForTriggerInfo(schedulerName,jobName,jobGroup);
+                                            } else {
+                                                alert("system is error:" + data.content);
+                                            }
+                                        }
+
+                                    });
+                                }
+                            }
+                        });
+                    }
+                };
+            }();
+
+            $(document).ready(function() {
+                quartzweb.job.init(2);
+            });
+
+        </script>
+    </body>
+</html>

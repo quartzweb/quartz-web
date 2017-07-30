@@ -1,0 +1,757 @@
+<!--/api/triggerInfo.json-->
+<div>
+    <div id="triggerInfo.json"><h1>&nbsp;</h1></div>
+    <div class="page-header">
+        <h4>13.获取Trigger信息</h4>
+    </div>
+    <div class="row">
+        <div class="col-lg-12">
+            <form class="form-horizontal">
+                <div class="form-group">
+                    <label class="col-lg-2 control-label">
+                        描述:
+                    </label>
+                    <label class="col-lg-10 control-label" style="text-align:left">
+                        获取(Job)作业的信息<br>
+                        返回值为json数组(json array)
+                    </label>
+                </div>
+                <div class="form-group">
+                    <label class="col-lg-2 control-label">
+                        url:
+                    </label>
+                    <label class="col-lg-10 control-label" style="text-align:left">
+                        /api/triggerInfo.json
+                    </label>
+                </div>
+                <div class="form-group">
+                    <label class="col-lg-2 control-label">
+                        输入参数:
+                    </label>
+                    <div class="col-lg-10" >
+                        <label class="control-label" style="text-align: left">
+                            无
+                        </label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-lg-2 control-label">
+                        输出参数:
+                    </label>
+                    <div class="col-lg-10" >
+                        <table class="table table-striped table-bordered table-condensed">
+                            <tr>
+                                <th style="width: 20%">参数名称</th>
+                                <th style="width: 10%">类型</th>
+                                <th>描述</th>
+                            </tr>
+                            <tr>
+                                <td>schedulerName</td>
+                                <td>json array</td>
+                                <td>key值为(Scheduler)调度器名称,value值为(Job)作业信息</td>
+                            </tr>
+                            <tr>
+                                <td>jobName</td>
+                                <td>string</td>
+                                <td>(job)作业名称</td>
+                            </tr>
+                            <tr>
+                                <td>jobGroup</td>
+                                <td>string</td>
+                                <td>(job)作业分组</td>
+                            </tr>
+                            <tr>
+                                <td>triggerName</td>
+                                <td>string</td>
+                                <td>
+                                    (trigger)触发器名称
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>triggerGroup</td>
+                                <td>string</td>
+                                <td>(trigger)触发器分组</td>
+                            </tr>
+                            <tr>
+                                <td>previousFireTime</td>
+                                <td>date</td>
+                                <td>下次触发时间</td>
+                            </tr>
+                            <tr>
+                                <td>nextFireTime</td>
+                                <td>date</td>
+                                <td>上次触发时间</td>
+                            </tr>
+                            <tr>
+                                <td>priority</td>
+                                <td>int</td>
+                                <td>优先级</td>
+                            </tr>
+                            <tr>
+                                <td>startTime</td>
+                                <td>date</td>
+                                <td>
+                                    开始时间
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>endTime</td>
+                                <td>date</td>
+                                <td>
+                                    结束时间
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>misfireInstruction</td>
+                                <td>int</td>
+                                <td>
+                                    错过触发器执行的类型
+                                    <ul>
+                                        <li>-1:不会立即执行,到下一个触发点再执行，继续重复执行的次数等于剩余次</li>
+                                        <li>0:不触发立即执行</li>
+                                        <li>1:以错过的第一个频率时间立刻开始执行</li>
+                                        <li>2:以当前时间为触发频率立刻触发一次执行</li>
+                                    </ul>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>finalFireTime</td>
+                                <td>date</td>
+                                <td>
+                                    最后触发时间
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>calendarName</td>
+                                <td>string</td>
+                                <td>
+                                    日历名称
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>triggerState</td>
+                                <td>string</td>
+                                <td>
+                                    状态
+                                    <ul style="list-style: decimal">
+                                        <li>NORMAL:正常</li>
+                                        <li>PAUSED:暂停</li>
+                                        <li>COMPLETE:完成</li>
+                                        <li>ERROR:错误</li>
+                                        <li>BLOCKED:阻塞</li>
+                                    </ul>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>cronExpression</td>
+                                <td>string</td>
+                                <td>
+                                    cron表达式
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>description</td>
+                                <td>string</td>
+                                <td>
+                                   描述
+                                </td>
+                            </tr>
+
+                        </table>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-lg-2 control-label">
+                        请求示例:
+                    </label>
+                    <div class="col-lg-10" >
+                        <pre>url/api/triggerInfo.json?schedulerName=quartzScheduler&jobName=jobname&jobGroup=jobGroup</pre>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-lg-2 control-label">
+                        返回信息:
+                    </label>
+                    <div class="col-lg-10" >
+                         <pre class="jsonCode">
+                            {
+                            "resultCode": 1,
+                            "content": [
+                                    {
+                                    "schedulerName": "quartzScheduler",
+                                    "jobName": "jobname",
+                                    "jobGroup": "jobGroup",
+                                    "triggerName": "triggerName",
+                                    "triggerGroup": "triggerGroup",
+                                    "previousFireTime": null,
+                                    "nextFireTime": "2017-07-21 17:34:40",
+                                    "priority": 5,
+                                    "startTime": "2017-07-21 17:34:36",
+                                    "endTime": null,
+                                    "misfireInstruction": 0,
+                                    "finalFireTime": null,
+                                    "fireTimeAfter": "2017-07-21 21:07:25",
+                                    "calendarName": null,
+                                    "description": null,
+                                    "triggerState": "NORMAL",
+                                    "cronExpression": "0/5 * * * * ?"
+                                    }
+                                ]
+                            }
+                        </pre>
+                    </div>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>
+<!--end /api/triggerInfo.json-->
+
+<!--/api/triggerAdd.json-->
+<div>
+    <div id="triggerAdd.json"><h1>&nbsp;</h1></div>
+    <div class="page-header">
+        <h4>14.添加Trigger</h4>
+    </div>
+    <div class="row">
+        <div class="col-lg-12">
+            <form class="form-horizontal">
+                <div class="form-group">
+                    <label class="col-lg-2 control-label">
+                        描述:
+                    </label>
+                    <label class="col-lg-10 control-label" style="text-align:left">
+                        添加(trigger)触犯器的信息,如果trigger存在便修改,目前只支持CronTrigger添加
+                    </label>
+                </div>
+                <div class="form-group">
+                    <label class="col-lg-2 control-label">
+                        url:
+                    </label>
+                    <label class="col-lg-10 control-label" style="text-align:left">
+                        /api/triggerAdd.json
+                    </label>
+                </div>
+                <div class="form-group">
+                    <label class="col-lg-2 control-label">
+                        输入参数:
+                    </label>
+                    <div class="col-lg-10" >
+                        <table class="table table-striped table-bordered table-condensed">
+                            <tr>
+                                <th style="width: 20%">参数名称</th>
+                                <th style="width: 10%">类型</th>
+                                <th style="width: 10%">是否必填</th>
+                                <th>描述</th>
+                            </tr>
+                            <tr>
+                                <td>schedulerName</td>
+                                <td>String</td>
+                                <td>YES</td>
+                                <td>(scheduler)调度器名称</td>
+                            </tr>
+                            <tr>
+                                <td>jobName</td>
+                                <td>String</td>
+                                <td>YES</td>
+                                <td>(job)作业名称</td>
+                            </tr>
+                            <tr>
+                                <td>jobGroup</td>
+                                <td>String</td>
+                                <td>YES</td>
+                                <td>(job)作业分组</td>
+                            </tr>
+                            <tr>
+                                <td>triggerName</td>
+                                <td>String</td>
+                                <td>YES</td>
+                                <td>
+                                    (trigger)触发器名称
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>triggerGroup</td>
+                                <td>String</td>
+                                <td>YES</td>
+                                <td>
+                                    (trigger)触发器分组
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>cronExpression</td>
+                                <td>String</td>
+                                <td>YES</td>
+                                <td>
+                                    cron表达式
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>priority</td>
+                                <td>int</td>
+                                <td>NO</td>
+                                <td>
+                                    (trigger)触发器优先级
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>startDate</td>
+                                <td>date</td>
+                                <td>NO</td>
+                                <td>
+                                    (trigger)触发器开始时间
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>endDate</td>
+                                <td>date</td>
+                                <td>NO</td>
+                                <td>
+                                    (trigger)触发器结束时间
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td>jobDataMapKey_{index}</td>
+                                <td>String</td>
+                                <td>NO</td>
+                                <td>(job)作业数据(jobDataMap)key值</td>
+                            </tr>
+                            <tr>
+                                <td>jobDataMapValue_{index}</td>
+                                <td>String</td>
+                                <td>NO</td>
+                                <td>(job)作业数据(jobDataMap)value值</td>
+                            </tr>
+                            <tr>
+                                <td>description</td>
+                                <td>String</td>
+                                <td>NO</td>
+                                <td>(trigger)触发器描述</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-lg-2 control-label">
+                        输出参数:
+                    </label>
+                    <div class="col-lg-10" >
+                        <pre>"ok"</pre>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-lg-2 control-label">
+                        请求示例:
+                    </label>
+                    <div class="col-lg-10" >
+                        <pre>/url/api/triggerAdd.json?schedulerName=quartzScheduler
+                            &jobName=jobName
+                            &jobGroup=jobGroup
+                            &triggerName=triggerName
+                            &triggerGroup=triggerGroup
+                            &priority=5
+                            &cronExpression=0/5 * * * * ?
+                            &startDate=2017-07-01 03:03:00
+                            &endDate=2017-07-01 03:30:00
+                            &jobDataMapKey_0=key
+                            &jobDataMapValue_0=value
+                            &description=描述
+                        </pre>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-lg-2 control-label">
+                        返回信息:
+                    </label>
+                    <div class="col-lg-10" >
+                         <pre class="jsonCode">
+                            {
+                                "resultCode": 1,
+                                "content": "ok"
+                             }
+                        </pre>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<!--end /api/triggerAdd.json-->
+
+<!--/api/triggerResume.json-->
+<div>
+    <div id="triggerResume.json"><h1>&nbsp;</h1></div>
+    <div class="page-header">
+        <h4>15.重启Trigger</h4>
+    </div>
+    <div class="row">
+        <div class="col-lg-12">
+            <form class="form-horizontal">
+                <div class="form-group">
+                    <label class="col-lg-2 control-label">
+                        描述:
+                    </label>
+                    <label class="col-lg-10 control-label" style="text-align:left">
+                        重启(job)作业
+                    </label>
+                </div>
+                <div class="form-group">
+                    <label class="col-lg-2 control-label">
+                        url:
+                    </label>
+                    <label class="col-lg-10 control-label" style="text-align:left">
+                        /api/triggerResume.json
+                    </label>
+                </div>
+                <div class="form-group">
+                    <label class="col-lg-2 control-label">
+                        输入参数:
+                    </label>
+                    <div class="col-lg-10" >
+                        <table class="table table-striped table-bordered table-condensed">
+                            <tr>
+                                <th style="width: 20%">参数名称</th>
+                                <th style="width: 10%">类型</th>
+                                <th style="width: 10%">是否必填</th>
+                                <th>描述</th>
+                            </tr>
+                            <tr>
+                                <td>schedulerName</td>
+                                <td>String</td>
+                                <td>YES</td>
+                                <td>(scheduler)调度器名称</td>
+                            </tr>
+                            <tr>
+                                <td>triggerName</td>
+                                <td>String</td>
+                                <td>YES</td>
+                                <td>(trigger)触发器名称</td>
+                            </tr>
+                            <tr>
+                                <td>triggerGroup</td>
+                                <td>String</td>
+                                <td>YES</td>
+                                <td>(trigger)触发器分组</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-lg-2 control-label">
+                        输出参数:
+                    </label>
+                    <div class="col-lg-10" >
+                        <pre>"ok"</pre>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-lg-2 control-label">
+                        请求示例:
+                    </label>
+                    <div class="col-lg-10" >
+                        <pre>url/api/triggerResume.json?schedulerName=quartzScheduler&triggerName=triggerName&triggerGroup=triggerGroup</pre>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-lg-2 control-label">
+                        返回信息:
+                    </label>
+                    <div class="col-lg-10" >
+                         <pre class="jsonCode">
+                            {
+                                "resultCode": 1,
+                                "content": "ok"
+                             }
+                        </pre>
+                    </div>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>
+<!--end /api/triggerResume.json-->
+
+<!--/api/triggerRemove.json-->
+<div>
+    <div id="triggerRemove.json"><h1>&nbsp;</h1></div>
+    <div class="page-header">
+        <h4>16.移除Trigger</h4>
+    </div>
+    <div class="row">
+        <div class="col-lg-12">
+            <form class="form-horizontal">
+                <div class="form-group">
+                    <label class="col-lg-2 control-label">
+                        描述:
+                    </label>
+                    <label class="col-lg-10 control-label" style="text-align:left">
+                        暂停(trigger)触发器，之后删除
+                    </label>
+                </div>
+                <div class="form-group">
+                    <label class="col-lg-2 control-label">
+                        url:
+                    </label>
+                    <label class="col-lg-10 control-label" style="text-align:left">
+                        /api/triggerRemove.json
+                    </label>
+                </div>
+                <div class="form-group">
+                    <label class="col-lg-2 control-label">
+                        输入参数:
+                    </label>
+                    <div class="col-lg-10" >
+                        <table class="table table-striped table-bordered table-condensed">
+                            <tr>
+                                <th style="width: 20%">参数名称</th>
+                                <th style="width: 10%">类型</th>
+                                <th style="width: 10%">是否必填</th>
+                                <th>描述</th>
+                            </tr>
+                            <tr>
+                                <td>schedulerName</td>
+                                <td>String</td>
+                                <td>YES</td>
+                                <td>(scheduler)调度器名称</td>
+                            </tr>
+                            <tr>
+                                <td>triggerName</td>
+                                <td>String</td>
+                                <td>YES</td>
+                                <td>(trigger)触发器名称</td>
+                            </tr>
+                            <tr>
+                                <td>triggerGroup</td>
+                                <td>String</td>
+                                <td>YES</td>
+                                <td>(trigger)触发器分组</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-lg-2 control-label">
+                        输出参数:
+                    </label>
+                    <div class="col-lg-10" >
+                        <pre>"ok"</pre>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-lg-2 control-label">
+                        请求示例:
+                    </label>
+                    <div class="col-lg-10" >
+                        <pre>url/api/triggerRemove.json?schedulerName=quartzScheduler&triggerName=triggerName&triggerGroup=triggerGroup</pre>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-lg-2 control-label">
+                        返回信息:
+                    </label>
+                    <div class="col-lg-10" >
+                         <pre class="jsonCode">
+                            {
+                                "resultCode": 1,
+                                "content": "ok"
+                             }
+                        </pre>
+                    </div>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>
+<!--end /api/triggerRemove.json-->
+
+<!--/api/triggerPause.json-->
+<div>
+    <div id="triggerPause.json"><h1>&nbsp;</h1></div>
+    <div class="page-header">
+        <h4>17.暂停Trigger</h4>
+    </div>
+    <div class="row">
+        <div class="col-lg-12">
+            <form class="form-horizontal">
+                <div class="form-group">
+                    <label class="col-lg-2 control-label">
+                        描述:
+                    </label>
+                    <label class="col-lg-10 control-label" style="text-align:left">
+                        暂停(trigger)触发器
+                    </label>
+                </div>
+                <div class="form-group">
+                    <label class="col-lg-2 control-label">
+                        url:
+                    </label>
+                    <label class="col-lg-10 control-label" style="text-align:left">
+                        /api/triggerPause.json
+                    </label>
+                </div>
+                <div class="form-group">
+                    <label class="col-lg-2 control-label">
+                        输入参数:
+                    </label>
+                    <div class="col-lg-10" >
+                        <table class="table table-striped table-bordered table-condensed">
+                            <tr>
+                                <th style="width: 20%">参数名称</th>
+                                <th style="width: 10%">类型</th>
+                                <th style="width: 10%">是否必填</th>
+                                <th>描述</th>
+                            </tr>
+                            <tr>
+                                <td>schedulerName</td>
+                                <td>String</td>
+                                <td>YES</td>
+                                <td>(scheduler)调度器名称</td>
+                            </tr>
+                            <tr>
+                                <td>triggerName</td>
+                                <td>String</td>
+                                <td>YES</td>
+                                <td>(trigger)触发器名称</td>
+                            </tr>
+                            <tr>
+                                <td>triggerGroup</td>
+                                <td>String</td>
+                                <td>YES</td>
+                                <td>(trigger)触发器分组</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-lg-2 control-label">
+                        输出参数:
+                    </label>
+                    <div class="col-lg-10" >
+                        <pre>"ok"</pre>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-lg-2 control-label">
+                        请求示例:
+                    </label>
+                    <div class="col-lg-10" >
+                        <pre>url/api/triggerPause.json?schedulerName=quartzScheduler&triggerName=triggerName&triggerGroup=triggerGroup</pre>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-lg-2 control-label">
+                        返回信息:
+                    </label>
+                    <div class="col-lg-10" >
+                         <pre class="jsonCode">
+                            {
+                                "resultCode": 1,
+                                "content": "ok"
+                             }
+                        </pre>
+                    </div>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>
+<!--end /api/triggerPause.json-->
+
+<!--/api/triggerRun.json-->
+<div>
+    <div id="triggerRun.json"><h1>&nbsp;</h1></div>
+    <div class="page-header">
+        <h4>18.运行Trigger</h4>
+    </div>
+    <div class="row">
+        <div class="col-lg-12">
+            <form class="form-horizontal">
+                <div class="form-group">
+                    <label class="col-lg-2 control-label">
+                        描述:
+                    </label>
+                    <label class="col-lg-10 control-label" style="text-align:left">
+                        运行(trigger)触发器
+                    </label>
+                </div>
+                <div class="form-group">
+                    <label class="col-lg-2 control-label">
+                        url:
+                    </label>
+                    <label class="col-lg-10 control-label" style="text-align:left">
+                        /api/triggerRun.json
+                    </label>
+                </div>
+                <div class="form-group">
+                    <label class="col-lg-2 control-label">
+                        输入参数:
+                    </label>
+                    <div class="col-lg-10" >
+                        <table class="table table-striped table-bordered table-condensed">
+                            <tr>
+                                <th style="width: 20%">参数名称</th>
+                                <th style="width: 10%">类型</th>
+                                <th style="width: 10%">是否必填</th>
+                                <th>描述</th>
+                            </tr>
+                            <tr>
+                                <td>schedulerName</td>
+                                <td>String</td>
+                                <td>YES</td>
+                                <td>(scheduler)调度器名称</td>
+                            </tr>
+                            <tr>
+                                <td>triggerName</td>
+                                <td>String</td>
+                                <td>YES</td>
+                                <td>(trigger)触发器名称</td>
+                            </tr>
+                            <tr>
+                                <td>triggerGroup</td>
+                                <td>String</td>
+                                <td>YES</td>
+                                <td>(trigger)触发器分组</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-lg-2 control-label">
+                        输出参数:
+                    </label>
+                    <div class="col-lg-10" >
+                        <pre>"ok"</pre>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-lg-2 control-label">
+                        请求示例:
+                    </label>
+                    <div class="col-lg-10" >
+                        <pre>url/api/triggerRun.json?schedulerName=quartzScheduler&triggerName=triggerName&triggerGroup=triggerGroup</pre>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-lg-2 control-label">
+                        返回信息:
+                    </label>
+                    <div class="col-lg-10" >
+                         <pre class="jsonCode">
+                            {
+                                "resultCode": 1,
+                                "content": "ok"
+                             }
+                        </pre>
+                    </div>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>
+<!--end /api/triggerRun.json-->

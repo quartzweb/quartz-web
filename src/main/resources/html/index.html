@@ -1,0 +1,119 @@
+<!doctype html>
+<html>
+    <head>
+        <title>QuartzWeb Index</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf8" />
+
+        <link href='css/bootstrap.min.css' rel="stylesheet" />
+        <link href="css/bootstrap-table.min.css" rel="stylesheet">
+        <link href="css/bootstrapValidator.min.css" rel="stylesheet">
+        <link href="css/bootstrap-datetimepicker.min.css" rel="stylesheet">
+        <link href='css/common.css' rel="stylesheet" />
+
+        <script type="text/javascript" src="js/jquery.min.js"></script>
+        <script type="text/javascript" src="js/bootstrap.min.js"></script>
+        <script type="text/javascript" src="js/json2.min.js"></script>
+        <script type="text/javascript" src="js/bootbox.min.js" charset="utf8"></script>
+        <script type="text/javascript" src="js/doT.min.js" charset="utf8"></script>
+        <script src="js/bootstrap-table.min.js"></script>
+        <script src="js/bootstrap-table-zh-CN.min.js"></script>
+        <script src="js/bootstrapValidator.min.js"></script>
+        <script src="js/bootstrap-datetimepicker.min.js"></script>
+        <script src="js/zh_CN.min.js"></script>
+        <script type="text/javascript" src="js/common.js" charset="utf8"></script>
+    </head>
+    <body>
+        <div style="float:right;margin-right:20px;">
+            <h6><a class="langSelector" langNow="0">English</a> | <a class="langSelector" langNow="1">中文</a></h6>
+        </div>
+        <!--在jquery中用ajax加载导航信息-->
+        <div class="container">
+            <!--<div id="banner">
+                <h3>
+                    <a href="api/basic.json" target="_blank" class="lang" langkey="ViewJSONAPI">JSON API</a>
+                </h3>
+            </div>-->
+            <div id="content">
+                <div class="page-header">
+                    <h4>System info</h4>
+                </div>
+                <div class="row" >
+                    <div class="col-lg-12">
+                        <table id="dataTable" class="table table-bordered table-condensed">
+                            <tr>
+                                <td width="220px;" class="text-center td_lable">QuartzVersion</td>
+                                <td class="text-left" id="quartzVersion"></td>
+                            </tr>
+                            <tr>
+                                <td width="220px;" class="text-center td_lable">JavaVersion</td>
+                                <td class="text-left" id="javaVersion"></td>
+                            </tr>
+                            <tr>
+                                <td width="220px;" class="text-center td_lable">QuartzWebVersion</td>
+                                <td class="text-left" id="quartzWebVersion"></td>
+                            </tr>
+                            <tr>
+                                <td width="220px;"class="text-center td_lable">JavaVMName</td>
+                                <td class="text-left" id="javaVMName"></td>
+                            </tr>
+                            <tr>
+                                <td width="220px;"class="text-center td_lable">StartTime</td>
+                                <td class="text-left" id="javaVMStartTime"></td>
+                            </tr>
+                            <tr>
+                                <td width="220px;"class="text-center td_lable">JavaClassPath</td>
+                                <td class="text-left" id="javaClassPath"></td>
+                            </tr>
+
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!--脚部信息-->
+        <div id="footer"></div>
+
+        <script type="text/javascript">
+            $.namespace("quartzweb.index");
+            quartzweb.index = function () {
+                return  {
+                    init : function(index) {
+                        // 加载头部
+                        quartzweb.common.createHeaderHTML(index);
+                        // 加载尾部
+                        quartzweb.common.createFooterHTML();
+                        // 请求基础信息
+                        this.ajaxRequestForBasicInfo();
+                    },
+
+                    ajaxRequestForBasicInfo : function () {
+                        $.ajax({
+                            type: 'POST',
+                            url: "api/basic.json",
+                            success: function(data) {
+                                if(data.resultCode=="1"){
+                                    $("#quartzVersion").text(data.content.quartzVersion)
+                                    $("#javaVersion").text(data.content.javaVersion)
+                                    $("#javaVMName").text(data.content.javaVMName)
+                                    $("#javaVMStartTime").text(data.content.javaVMStartTime)
+                                    $("#quartzWebVersion").text(data.content.quartzWebVersion)
+                                    $("#javaClassPath").html(data.content.javaClassPath.split(/;|:/).join("<br/>"))
+                                } else {
+                                    alert("system is error:" + data.content);
+                                }
+
+                            },
+                            dataType: "json"
+                        });
+                    },
+                }
+            }();
+
+            $(document).ready(function() {
+                quartzweb.index.init(0);
+            });
+
+        </script>
+    </body>
+</html>

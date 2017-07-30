@@ -1,0 +1,655 @@
+
+<!doctype html>
+<html>
+<head>
+    <title>Job</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf8" />
+
+    <link href='css/bootstrap.min.css' rel="stylesheet" />
+    <link href="css/bootstrap-table.min.css" rel="stylesheet">
+    <link href="css/bootstrapValidator.min.css" rel="stylesheet">
+    <link href="css/bootstrap-datetimepicker.min.css" rel="stylesheet">
+    <link href='css/common.css' rel="stylesheet" />
+
+    <script type="text/javascript" src="js/jquery.min.js"></script>
+    <script type="text/javascript" src="js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="js/json2.min.js"></script>
+    <script type="text/javascript" src="js/bootbox.min.js" charset="utf8"></script>
+    <script type="text/javascript" src="js/doT.min.js" charset="utf8"></script>
+    <script src="js/bootstrap-table.min.js"></script>
+    <script src="js/bootstrap-table-zh-CN.min.js"></script>
+    <script src="js/bootstrapValidator.min.js"></script>
+    <script src="js/bootstrap-datetimepicker.min.js"></script>
+    <script src="js/zh_CN.min.js"></script>
+    <script type="text/javascript" src="js/common.js" charset="utf8"></script>
+</head>
+<body>
+<div style="float:right;margin-right:20px;">
+    <h6><a class="langSelector" langNow="0">English</a> | <a class="langSelector" langNow="1">中文</a></h6>
+</div>
+<!--在jquery中用ajax加载导航信息-->
+<div class="container">
+    <div id="banner">
+        <!--<h3>-->
+           <!--&lt;!&ndash; <a href="api/jobInfo.json" target="_blank" class="lang" langkey="ViewJSONAPI">JSON API</a>&ndash;&gt;-->
+        <!--</h3>-->
+    </div>
+    <div id="content">
+        <div class="page-header">
+          <!--  <h4>
+                {{= schedulerJob }}<a href="jobAdd.html">添加</a>
+            </h4>-->
+        </div>
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="well">
+                <form class="form-horizontal" id="dataForm" action="api/jobAdd.json">
+                    <input type="hidden" id="jobType" name="jobType" >
+                    <fieldset>
+                        <legend>Job Add</legend>
+                        <div class="form-group">
+                            <label for="schedulerName" class="col-lg-2 control-label">
+                                SchedulerName<span style="color: red">*</span>
+                            </label>
+                            <div class="col-lg-9">
+                                <input type="hidden" class="form-control" name="checkJob" id="checkJob" />
+                                <input type="text" class="form-control" id="schedulerName" name="schedulerName" placeholder="Scheduler Name" readonly="readonly">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="jobName" class="col-lg-2 control-label">
+                                JobName<span style="color: red">*</span>
+                            </label>
+                            <div class="col-lg-9">
+                                <input type="text" class="form-control" id="jobName"  name="jobName" placeholder="JobName">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="jobGroup" class="col-lg-2 control-label">
+                                JobGroup<span style="color: red">*</span>
+                            </label>
+                            <div class="col-lg-9">
+                                <input type="text" class="form-control" id="jobGroup"  name="jobGroup" placeholder="JobGroup">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="jobGroup" class="col-lg-2 control-label">
+                                description
+                            </label>
+                            <div class="col-lg-9">
+                                <input type="text" class="form-control" id="description"  name="description" placeholder="description">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="jobClass" class="col-lg-2 control-label">
+                                JobClass<span style="color: red">*</span>
+                            </label>
+                            <div class="col-lg-9" id="jobClassInfo">
+                                <div class="row" id="jobClassRow">
+                                    <div class="col-xs-12 col-md-12 col-lg-12">
+                                        <input type="text" class="form-control" id="jobClass"  name="jobClass" placeholder="JobClass">
+                                    </div>
+                                </div>
+                                <!--select-->
+                                <div id="jobClassParamTypeDiv"></div>
+                                <!--input input-->
+                                <div id="jobClassParamTypeInputDiv"></div>
+                            </div>
+                            <!-- jobclass构造函数的参数类型和参数值，根据系统返回的jobType区分（1-继承org.quartz.Job类，2-自定义类） -->
+                            <!-- 继承自org.quartz.Job类调用默认无参构造函数 -->
+                            <!-- 自定义类用户选择构造函数并赋值 -->
+                            <!-- 构造函数选择 -->
+                            <script id="jobClassParamType-tmpl" type="text/x-dot-template">
+                                <div class="row" style="margin-bottom: 10px;margin-top: 10px;">
+                                    <div class="col-xs-12 col-md-12 col-lg-12">
+                                        <!--option注意，紧密，取消空格-->
+                                        <select class="form-control" id="jobClassParamTypeSelect" onchange="quartzweb.jobAdd.createParamType(this,'jobClassParamType')">
+                                            {{ for(var constructor in it.constructorInfo) { }}
+                                            <option value="{{=it.constructorInfo[constructor]}}">{{? !it.constructorInfo[constructor].length}}non-parameter constructor{{??}}{{=it.constructorInfo[constructor]}}{{?}}</option>
+                                            {{ }}}
+                                        </select>
+                                    </div>
+                                </div>
+                            </script>
+                            <!--构造函数参数选择-->
+                            <script id="jobClassParamTypeInput-tmpl" type="text/x-dot-template">
+                                {{ for(var index in it) { }}
+                                    {{? it[index]!='non-parameter constructor'}}
+                                        <div class="row" style="margin-bottom: 10px;">
+                                            <div class="col-xs-6 col-md-6 col-lg-6">
+                                                <input type="text" class="form-control" id="jobClassParamType_{{=index}}" name="jobClassParamType_{{=index}}" value="{{=it[index]}}" readonly="readonly">
+                                            </div>
+                                            <div class="col-xs-6 col-md-6 col-lg-6">
+                                                <input type="text" class="form-control" id="jobClassParamTypeValue_{{=index}}" name="jobClassParamTypeValue_{{=index}}" placeholder="value">
+                                            </div>
+                                        </div>
+                                    {{?}}
+                                {{ }}}
+                            </script>
+
+                        </div>
+                        <div class="form-group" id="jobDataMapFormGroup" style="display: none">
+                            <label class="col-lg-2 control-label">
+                                jobDataMap
+                                <input id="jobDataMapIndex" value="0" type="hidden">
+                                <a href="javascript:;" onclick="quartzweb.jobAdd.jobDataMapAdd()">
+                                    <span class="glyphicon glyphicon-plus"></span>
+                                </a>
+                            </label>
+                            <div class="col-lg-9" id="jobDataMap">
+                                <div class="row" style="margin-bottom:10px;">
+                                    <div class="col-xs-5 col-md-5 col-lg-5">
+                                        <input type="text" class="form-control" name="jobDataMapKey_0" placeholder="key">
+                                    </div>
+                                    <div class="col-xs-5 col-md-5 col-lg-5">
+                                        <input type="text" class="form-control" name="jobDataMapValue_0" placeholder="value">
+                                    </div>
+                                    <div class="col-xs-1 col-md-1 col-lg-1">
+                                        <a href="javascript:;" onclick="quartzweb.jobAdd.jobDataMapDel(this)">
+                                            <span class="glyphicon glyphicon-minus"></span>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            <!--jobMap增加模板-->
+                            <script id="jobDataMapRow-tmpl" type="text/x-dot-template">
+                                <div class="row" style="margin-bottom:10px;">
+                                    <div class="col-xs-5 col-md-5 col-lg-5">
+                                        <input type="text" class="form-control" name="jobDataMapKey_{{= it.index}}" placeholder="key">
+                                    </div>
+                                    <div class="col-xs-5 col-md-5 col-lg-5">
+                                        <input type="text" class="form-control" name="jobDataMapValue_{{= it.index}}" placeholder="value">
+                                    </div>
+                                    <div class="col-xs-1 col-md-1 col-lg-1">
+                                        <a href="javascript:;" onclick="quartzweb.jobAdd.jobDataMapDel(this)">
+                                            <span class="glyphicon glyphicon-minus"></span>
+                                        </a>
+                                    </div>
+                                </div>
+                            </script>
+                        </div>
+
+                        <div class="form-group" id="methodFormGroup" style="display: none" >
+                            <label for="jobClass" class="col-lg-2 control-label">
+                                method<span style="color: red">*</span>
+                            </label>
+                            <div class="col-lg-9" id="methodInfo">
+                                <!--select-->
+                                <div id="jobClassMethodParamTypeDiv"></div>
+                                <!--input input -->
+                                <div id="jobClassMethodParamTypeInputDiv"></div>
+                            </div>
+                            <!--method列表-->
+                            <script id="jobClassMethodParamType-tmpl" type="text/x-dot-template">
+                                <div class="row" style="margin-bottom: 10px;margin-top: 10px;">
+                                    <div class="col-xs-12 col-md-12 col-lg-12">
+                                        <!--option注意，紧密，取消空格-->
+                                        <select class="form-control" id="jobClassMethodParamTypeSelect" name="jobClassMethodName" onchange="quartzweb.jobAdd.createParamType(this,'jobClassMethodParamType')">
+                                            {{ for(var method in it.methodInfo) { }}
+                                                {{ for(var methodDetail in it.methodInfo[method]) { }}
+                                                    <option value="{{= methodDetail}}">{{= methodDetail}}{{=it.methodInfo[method][methodDetail]}}</option>
+                                                {{ }}}
+                                            {{ }}}
+                                        </select>
+                                    </div>
+                                </div>
+                            </script>
+                            <!--够赞函数参数选择-->
+                            <script id="jobClassMethodParamTypeInput-tmpl" type="text/x-dot-template">
+                                {{ for(var index in it) { }}
+                                <div class="row" style="margin-bottom: 10px;">
+                                    <div class="col-xs-6 col-md-6 col-lg-6">
+                                        <input type="text" class="form-control" id="jobClassMethodParamType_{{=index}}" name="jobClassMethodParamType_{{=index}}" value="{{=it[index]}}" readonly="readonly">
+                                    </div>
+                                    <div class="col-xs-6 col-md-6 col-lg-6">
+                                        <input type="text" class="form-control" id="jobClassMethodParamTypeValue_{{=index}}" name="jobClassMethodParamTypeValue_{{=index}}" placeholder="value">
+                                    </div>
+                                </div>
+                                {{ }}}
+                            </script>
+                        </div>
+                        <div class="form-group" id="methodInvokerTypeFormGroup" style="display: none">
+                            <label for="methodInvokerType" class="col-lg-2 control-label">
+                                method Invoker Type
+                            </label>
+                            <div class="col-lg-9">
+                                <select class="form-control" id="methodInvokerType" name="methodInvokerType">
+                                    <option value="1">NORMAL</option>
+                                    <option value="2">STATEFUL</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="col-lg-10 col-lg-offset-2">
+                                <button type="reset" class="btn btn-default">Cancel</button>
+                                <button type="submit" class="btn btn-primary">Submit</button>
+                            </div>
+                        </div>
+                    </fieldset>
+                </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--脚部信息-->
+<div id="footer"></div>
+
+<script type="text/javascript">
+
+    $.namespace("quartzweb.jobAdd");
+    quartzweb.jobAdd = function () {
+        return {
+            init: function (index) {
+                // 加载头部
+                quartzweb.common.createHeaderHTML(index);
+                // 加载尾部
+                quartzweb.common.createFooterHTML();
+                // 设置变量名称
+                var schedulerName = quartzweb.common.getWindowhrefVar("schedulerName");
+                $("#schedulerName").val(schedulerName);
+
+                var type = quartzweb.common.getWindowhrefVar("type");
+                if(type==="modify"){
+                    var jobName = quartzweb.common.getWindowhrefVar("jobName");
+                    $("#jobName").val(jobName);
+                    $("#jobName").attr("readOnly", "readOnly");
+                    var jobGroup = quartzweb.common.getWindowhrefVar("jobGroup");
+                    $("#jobGroup").val(jobGroup);
+                    $("#jobGroup").attr("readOnly", "readOnly");
+
+                }
+
+                // 校验表单
+                quartzweb.jobAdd.validator();
+            },
+            validator:function () {
+                $("#dataForm").bootstrapValidator({
+                    // 只排除关闭
+                    excluded:[":disabled"],
+                    feedbackIcons: {/*输入框不同状态，显示图片的样式*/
+                        valid: 'glyphicon glyphicon-ok',
+                        invalid: 'glyphicon glyphicon-remove',
+                        validating: 'glyphicon glyphicon-refresh'
+                    },
+                    fields: {
+                        /*验证*/
+                        schedulerName :{
+                            message: 'The SchedulerName is not valid',
+                            validators : {
+                                notEmpty: {
+                                    /*非空提示*/
+                                    message: 'The SchedulerName is not empty'
+                                }
+                            },
+                        },
+                        jobName :{
+                            message: 'The JobName is not valid',
+                            validators : {
+                                notEmpty: {
+                                    /*非空提示*/
+                                    message: 'The JobName is not empty'
+                                }
+                            },
+                        },
+                        jobGroup :{
+                            message: 'The JobGroup is not valid',
+                            validators : {
+                                notEmpty: {
+                                    /*非空提示*/
+                                    message: 'The JobGroup is not empty'
+                                }
+                            }
+                        },
+                        //校验Job
+                        checkJob:{
+                            validators: {
+                                callback: {
+                                    message: 'job exist',
+                                    callback: function(fieldValue, validator, $field) {
+                                        var type = quartzweb.common.getWindowhrefVar("type");
+                                        if(type==="modify"){
+                                            return true;
+                                        }
+                                        //var json = JSON.parse(fieldValue);
+                                        var flag = false;
+                                        var schedulerName = $("#schedulerName").val();
+                                        var jobName = $("#jobName").val();
+                                        var jobGroup = $("#jobGroup").val();
+                                        if(schedulerName!==""&&jobName!==""&&jobGroup!==""){
+                                            $.ajax({
+                                                type: 'POST',
+                                                url: "api/validateJob.json",
+                                                async: false,
+                                                data: {
+                                                    schedulerName: schedulerName,
+                                                    jobName: jobName,
+                                                    jobGroup: jobGroup
+                                                },
+                                                dataType: "json",
+                                                success: function (data) {
+                                                    if (1 === data.resultCode) {
+                                                        // 校验成功
+                                                        if(data.content.result === true) {
+                                                            flag = false;
+                                                        } else {
+                                                            flag = true
+                                                        }
+                                                    } else {
+                                                        alert("system is error : " + data.content);
+                                                        flag = false;
+                                                    }
+                                                }
+                                            });
+                                        } else {
+                                            flag = true;
+                                        }
+                                        return flag;
+                                    }
+                                }
+                            }
+                        },
+                        jobClass :{
+                            message: 'The JobClass is not valid',
+                            validators : {
+                                notEmpty: {
+                                    /*非空提示*/
+                                    message: 'The JobClass is not empty'
+                                },
+                                callback: {
+                                    message: 'class not found',
+                                    callback: function(fieldValue, validator, $field) {
+                                        var flag = false;
+                                        if(fieldValue!==""){
+                                            $.ajax({
+                                                type: 'POST',
+                                                url: "api/classInfo.json",
+                                                async:false,
+                                                data:{
+                                                    className:fieldValue
+                                                },
+                                                dataType: "json",
+                                                success: function (data) {
+                                                    if (1 === data.resultCode) {
+                                                        // 校验成功
+                                                        if(data.content.result === true) {
+                                                            //jobType=1继承与org.quartz.Job
+                                                            //jobType=2自定义类
+                                                            if(data.content.jobType===1){
+                                                                $("#jobType").val("1");
+                                                                //jobType为1时
+                                                                //显示jobDataMap,可以添加自定义参数
+                                                                $("#jobDataMapFormGroup").show();
+                                                                // 选择执行方法
+                                                                $("#methodFormGroup").hide();
+                                                                $("#methodInvokerTypeFormGroup").hide();
+                                                                $("#jobClassParamTypeDiv").hide();
+                                                                $("#jobClassParamTypeInputDiv").hide();
+
+                                                            } else {
+                                                                $("#jobType").val("2");
+                                                                $("#jobDataMapFormGroup").hide();
+                                                                // 选择执行方法
+                                                                $("#methodFormGroup").show();
+                                                                $("#methodInvokerTypeFormGroup").show();
+                                                                $("#jobClassParamTypeDiv").show();
+                                                                $("#jobClassParamTypeInputDiv").show();
+                                                                // 设置构造函数
+                                                                var tmpl = $('#jobClassParamType-tmpl').html();
+                                                                var doTtmpl = doT.template(tmpl);
+                                                                var contentHtml = doTtmpl(data.content);
+                                                                $("#jobClassParamTypeDiv").html(contentHtml);
+                                                                // 设置方法参数
+                                                                var methodtmpl = $('#jobClassMethodParamType-tmpl').html();
+                                                                var methoddoTtmpl = doT.template(methodtmpl);
+
+                                                                console.log(data.content)
+                                                                var methodcontentHtml = methoddoTtmpl(data.content);
+                                                                $("#jobClassMethodParamTypeDiv").html(methodcontentHtml);
+
+                                                                quartzweb.jobAdd.createParamType($("#jobClassParamTypeSelect"),"jobClassParamType");
+                                                                quartzweb.jobAdd.createParamType($("#jobClassMethodParamTypeSelect"),"jobClassMethodParamType");
+                                                            }
+
+                                                            flag = true;
+                                                        } else {
+                                                            //校验失败
+                                                            flag = false;
+                                                            $("#jobClassParamTypeDiv").html("");
+                                                            $("#jobClassParamTypeInputDiv").html("");
+                                                            $("#jobDataMapFormGroup").hide();
+                                                            $("#methodFormGroup").hide();
+                                                            $("#methodInvokerTypeFormGroup").hide();
+                                                        }
+                                                    } else {
+                                                        alert("system is error : " + data.content);
+                                                        flag = false;
+                                                    }
+
+                                                }
+
+                                            });
+                                        } else {
+                                            flag = true;
+                                            $("#jobClassParamTypeDiv").html("");
+
+                                        }
+                                        return flag;
+                                    }
+                                }
+                            },
+                        },
+                    }
+                }).on('success.form.bv', function(e) {
+                    // Prevent form submission
+                    e.preventDefault();
+
+                    // Get the form instance
+                    var $form = $(e.target);
+
+                    // Get the BootstrapValidator instance
+                    //var bv = $form.data('bootstrapValidator');
+                    //var data = $form.serializeArray()
+                    //console.log(JSON.stringify(data))
+
+                    // Use Ajax to submit form data
+                    $.post($form.attr('action'), $form.serialize(), function(data) {
+                        if (1 === data.resultCode) {
+                            if(data.content === "ok") {
+                                window.location.href = "job.html";
+                            } else {
+                                alert("system is error : " + data.content.result);
+                            }
+                        }else{
+                            alert("system is error : " + data.content);
+                        }
+                    }, 'json');
+                });
+
+                // 判断多个字段
+                $('#dataForm').on('keyup', 'input[name="schedulerName"], input[name="jobName"], input[name="jobGroup"]', function(e) {
+                    var schedulerName = $('#dataForm').find('[name="schedulerName"]').val(),
+                        jobName = $('#dataForm').find('[name="jobName"]').val(),
+                        jobGroup = $('#dataForm').find('[name="jobGroup"]').val();
+                    var checkJobValue = {
+                        schedulerName:schedulerName,
+                        jobName:jobName,
+                        jobGroup:jobGroup
+                    };
+//                    // Set the dob field value
+                     $('#dataForm').find('[name="checkJob"]').val(JSON.stringify(checkJobValue));
+
+                    // Revalidate it
+                    if(schedulerName!=""&&jobName!=null&&jobGroup!=null){
+                        $('#dataForm').bootstrapValidator('revalidateField', "checkJob");
+                    }
+
+                });
+            },
+            // job列添加一行
+            jobDataMapAdd: function(){
+                var index = $("#jobDataMapIndex").val();
+                index++;
+                $("#jobDataMapIndex").val(index);
+                var json = {"index":index}
+                var tmpl = $('#jobDataMapRow-tmpl').html();
+                var doTtmpl = doT.template(tmpl);
+                var contentHtml = doTtmpl(json);
+                $("#jobDataMap").append(contentHtml);
+
+            },
+            // job列删除一行
+            jobDataMapDel: function(obj){
+                $(obj).parent().parent().remove();
+            },
+            createParamType: function (selecObj,paramId) {
+                //清除校验字段
+                //removeField
+                var typeNameValueIdPre =  paramId+ "Value_";
+                $("input").each(function(index, element) {
+                    var inputName = $(this).attr("name");
+                    if(inputName!==""&&inputName!==null&&!(typeof(inputName) == "undefined")){
+                        if(inputName.indexOf(typeNameValueIdPre)>=0){
+                            // 先移除校验，之后添加
+                            $('#dataForm').bootstrapValidator('removeField', inputName);
+                        }
+                    }
+
+                });
+                var selectVal = $(selecObj).find("option:selected").text();
+                // 名称中包含#号时,获取详情，去除方法名称
+                if(selectVal!==""&&selectVal!==null&&!(typeof(selectVal) == "undefined")&&selectVal.indexOf("#")>=0){
+                    selectVal = selectVal.split("#")[1];
+                }
+                if(selectVal!==""&&selectVal!==null&&!(typeof(selectVal) == "undefined")){
+                    var paramTypes = selectVal.split(",");
+                    var tmpl = $('#'+paramId+'Input-tmpl').html();
+                    var doTtmpl = doT.template(tmpl);
+                    var contentHtml = doTtmpl(paramTypes);
+                    $("#"+paramId+"InputDiv").html(contentHtml);
+
+                    for (var index in paramTypes) {
+                        var paramType = paramTypes[index];
+                        var typeNameId = paramId + "_" + index;
+                        var typeNameValueId = paramId + "Value_" + index;
+                        // 整数
+                        if(paramType === 'java.lang.Integer'||paramType === 'int'){
+                            $('#dataForm').bootstrapValidator('addField', typeNameValueId, {
+                                validators: {
+                                    integer: {
+
+                                    }
+                                }
+                            });
+                        }
+                        // 浮点数
+                        else if(paramType === 'java.lang.Double'||paramType === 'double'
+                            ||paramType === 'java.lang.Float'||paramType === 'float'){
+                            $('#dataForm').bootstrapValidator('addField', typeNameValueId, {
+                                validators: {
+                                    numeric: {
+
+                                    }
+                                }
+                            });
+                        }
+                        // 日期格式校验
+                        else if(paramType === 'java.util.Date'){
+                            $('#dataForm').bootstrapValidator('addField', typeNameValueId, {
+                                validators: {
+                                    date: {
+                                        format : 'YYYY-MM-DD hh:mm:00'
+                                    }
+                                }
+                            });
+                            $("#" + typeNameValueId).attr("readOnly", "readOnly");
+                            $("#" + typeNameValueId).datetimepicker({
+                                format:'yyyy-mm-dd hh:ii:00',
+                                weekStart: 1,
+                                todayBtn:  1,
+                                autoclose: 1,
+                                todayHighlight: 1,
+                                startView: 2,
+                                forceParse: 0,
+                                showSecond:1,
+                                // 每分钟
+                                minuteStep:1
+                                //secondStep: 1
+
+                            });
+
+                        }
+                        else if(paramType === "java.lang.Character"||paramType === "char"){
+                            $('#dataForm').bootstrapValidator('addField', typeNameValueId, {
+                                validators: {
+                                    stringLength: {
+                                        max : 1
+                                    }
+                                }
+                            });
+                        }
+                        // 字符串不处理
+                        else if(paramType ==="java.lang.String"){
+
+                        } else {
+                            // 其他类型必须存在
+                            $('#dataForm').bootstrapValidator('addField', typeNameValueId, {
+                                validators: {
+                                    callback: {
+                                        message: 'class not found or class cast exception',
+                                        callback: function(fieldValue, validator, $field) {
+                                            var flag = false;
+                                            var assignableClassName = $("#" + typeNameId).val();
+                                            if(fieldValue!==""){
+                                                $.ajax({
+                                                    type: 'POST',
+                                                    url: "api/assignable.json",
+                                                    async:false,
+                                                    data:{
+                                                        className:fieldValue,
+                                                        assignableClassName:assignableClassName
+                                                    },
+                                                    success: function (data) {
+                                                        if (1 === data.resultCode) {
+                                                            if(data.content.result === true) {
+                                                                flag = true;
+                                                            } else {
+                                                                flag = false;
+                                                            }
+                                                        } else {
+                                                            alert("system is error : " + data.content);
+                                                            flag = false;
+                                                        }
+                                                    },
+                                                    dataType: "json"
+                                                });
+                                            } else {
+                                                flag = true;
+                                            }
+                                            return flag;
+                                        }
+                                    }
+                                }
+                            });
+                        }
+                    }
+                } else {
+                    //
+                    $("#"+paramId+"InputDiv").html("");
+
+                }
+
+
+            }
+        };
+    }();
+
+    $(document).ready(function() {
+        quartzweb.jobAdd.init(2);
+    });
+
+</script>
+</body>
+</html>
