@@ -14,7 +14,7 @@ License
 Introduction
 ---
 - git clone https://github.com/quartzweb/quartz-web.git
-- cd quartzweb && mvn install
+- cd quartz-web && mvn install
 
 Documentation
 ---
