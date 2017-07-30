@@ -13,7 +13,7 @@ Trigger:动态配置
 
 
 ### Introduction
-- https://github.com/quartzweb/quartz-web.git
+- git clone https://github.com/quartzweb/quartz-web.git
 - cd quartzweb && mvn install
 
 ### Documentation
