@@ -64,6 +64,8 @@ quartzweb.common =function () {
             var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function (m, key, value) {
                 vars[key] = value;
             });
+            // URL解码
+            vars[name] = decodeURI(vars[name]);
             return vars[name];
         },
 
