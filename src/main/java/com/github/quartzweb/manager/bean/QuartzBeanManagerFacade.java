@@ -4,7 +4,6 @@
 package com.github.quartzweb.manager.bean;
 
 import com.github.quartzweb.exception.NoSuchBeanDefinitionException;
-import com.github.quartzweb.utils.ReflectionUtils;
 import com.github.quartzweb.utils.SortListUtil;
 
 import java.util.ArrayList;
@@ -58,7 +57,7 @@ public class QuartzBeanManagerFacade {
                     return bean;
                 }
             } catch (Exception e) {
-                ReflectionUtils.handleReflectionException(e);
+                //ReflectionUtils.handleReflectionException(e);
             }
 
         }
@@ -69,7 +68,7 @@ public class QuartzBeanManagerFacade {
                     return bean;
                 }
             } catch (Exception e) {
-                ReflectionUtils.handleReflectionException(e);
+                //ReflectionUtils.handleReflectionException(e);
             }
         }
 
@@ -84,7 +83,7 @@ public class QuartzBeanManagerFacade {
                     return bean;
                 }
             } catch (Exception e) {
-                ReflectionUtils.handleReflectionException(e);
+                //ReflectionUtils.handleReflectionException(e);
             }
 
         }
@@ -95,7 +94,7 @@ public class QuartzBeanManagerFacade {
                     return bean;
                 }
             } catch (Exception e) {
-                ReflectionUtils.handleReflectionException(e);
+                //ReflectionUtils.handleReflectionException(e);
             }
         }
 
