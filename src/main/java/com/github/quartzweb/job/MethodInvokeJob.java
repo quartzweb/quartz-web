@@ -43,7 +43,7 @@ public class MethodInvokeJob implements Job {
             if (constructorArguments != null && constructorArguments.length > 0) {
                 jobBean = quartzBeanManagerFacade.getBean(jobClass, constructorArguments);
             } else {
-                jobBean = quartzBeanManagerFacade.getBean(jobClass, constructorArguments);
+                jobBean = quartzBeanManagerFacade.getBean(jobClass);
             }
 
             MethodInvoker methodInvoker = new MethodInvoker();
