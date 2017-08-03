@@ -3,10 +3,9 @@
  */
 package com.github.quartzweb.http;
 
+import com.github.quartzweb.log.LOG;
 import com.github.quartzweb.utils.IOUtils;
 import com.github.quartzweb.utils.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -24,7 +23,6 @@ import java.util.Map;
  */
 abstract class ResourceServlet extends HttpServlet {
 
-    private static final Logger logger = LoggerFactory.getLogger(ResourceServlet.class);
 
     /**
      * 静态资源路径
@@ -118,7 +116,6 @@ abstract class ResourceServlet extends HttpServlet {
                 || path.startsWith("/css")//
                 || path.startsWith("/js") //
                 || path.startsWith("/img"))) {
-
             if (contextPath.equals("") || contextPath.equals("/")) {
                 response.sendRedirect(servletPath + "/login.html");
                 return;
@@ -147,6 +144,7 @@ abstract class ResourceServlet extends HttpServlet {
         }
 
         if (path.startsWith(servicePathPrefix)) {
+            LOG.debug("path:" + path);
             //String fullUrl = path;
             /*if (request.getQueryString() != null && request.getQueryString().length() > 0) {
                 fullUrl += "?" + request.getQueryString();
@@ -254,6 +252,7 @@ abstract class ResourceServlet extends HttpServlet {
      * @param resourcePath 资源路径
      */
     public void setResourcePath(String resourcePath) {
+        LOG.debug("resourcePath:" + resourcePath);
         this.resourcePath = resourcePath;
     }
 
@@ -272,6 +271,7 @@ abstract class ResourceServlet extends HttpServlet {
      * @param servicePathPrefix 业务处理路径前缀
      */
     public void setServicePathPrefix(String servicePathPrefix) {
+        LOG.debug("servicePathPrefix:" + servicePathPrefix);
         this.servicePathPrefix = servicePathPrefix;
     }
 

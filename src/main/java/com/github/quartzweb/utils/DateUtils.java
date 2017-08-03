@@ -43,7 +43,6 @@ public class DateUtils {
         try {
             return format.parse(date);
         } catch (ParseException e) {
-            //e.printStackTrace();
             return null;
         }
     }

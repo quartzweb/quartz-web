@@ -3,14 +3,13 @@
  */
 package com.github.quartzweb.job;
 
+import com.github.quartzweb.log.LOG;
 import com.github.quartzweb.manager.bean.QuartzBeanManagerFacade;
 import com.github.quartzweb.utils.DateUtils;
 import org.quartz.Job;
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.Date;
 
@@ -19,12 +18,10 @@ import java.util.Date;
  */
 public class MethodInvokeJob implements Job {
 
-    private static final Logger logger = LoggerFactory.getLogger(MethodInvokeJob.class);
-
     @Override
     public void execute(JobExecutionContext context) throws JobExecutionException {
         Date startDate = new Date();
-        logger.debug("methodInvokeJob start : " + DateUtils.formart(startDate));
+        LOG.debug("methodInvokeJob start : " + DateUtils.formart(startDate));
         long startTime = startDate.getTime();
 
         JobDataMap jobDataMap = context.getMergedJobDataMap();
@@ -39,7 +36,12 @@ public class MethodInvokeJob implements Job {
             String jobClassMethodName = (String) jobClassMethodNameObj;
             Object[] jobClassMethodArgs = (Object[]) jobClassMethodArgsObj;
             Object jobBean;
+
+            LOG.debug("methodInvokeJob jobClass:" + jobClass);
+            LOG.debug("methodInvokeJob jobClassMethodName:" + jobClassMethodName);
+
             QuartzBeanManagerFacade quartzBeanManagerFacade = QuartzBeanManagerFacade.getInstance();
+
             if (constructorArguments != null && constructorArguments.length > 0) {
                 jobBean = quartzBeanManagerFacade.getBean(jobClass, constructorArguments);
             } else {
@@ -60,10 +62,10 @@ public class MethodInvokeJob implements Job {
             context.setResult(result);
             Date endDate = new Date();
             long endTime = endDate.getTime();
-            logger.debug("methodInvokeJob end : " + DateUtils.formart(endDate) + "," + (endTime - startTime));
+            LOG.debug("methodInvokeJob end : " + DateUtils.formart(endDate) + "," + (endTime - startTime));
 
         } catch (Exception e) {
-            logger.error("MethodInvokeJob exception message:" + e.getMessage());
+            LOG.error("MethodInvokeJob exception message:" + e.getMessage(), e);
             e.printStackTrace();
             throw new JobExecutionException(e);
         }

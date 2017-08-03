@@ -4,16 +4,18 @@
 package com.github.quartzweb.server;
 
 
+import com.github.quartzweb.log.LOG;
+import com.github.quartzweb.manager.quartz.QuartzManager;
 import com.github.quartzweb.utils.PropertiesLoaderUtils;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.webapp.WebAppContext;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.quartz.Scheduler;
 
 import javax.servlet.Servlet;
 import java.io.File;
 import java.net.URL;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
@@ -22,7 +24,6 @@ import java.util.Properties;
  */
 public class StartWebServer {
 
-    private static Logger logger = LoggerFactory.getLogger(StartWebServer.class);
 
     public void startServer(){
         Thread thread = new Thread(new Runnable() {
@@ -33,8 +34,9 @@ public class StartWebServer {
                 String port = properties.getProperty("port");
                 String resourcePath = properties.getProperty("resourcePath");
                 String contextPath = properties.getProperty("contextPath");
+
                 String startWebServerServletClass = properties.getProperty("startWebServer.servlet.class");
-                logger.info("jetty server start.....,port:" + port +
+                LOG.info("jetty server start.....,port:" + port +
                         ",contextPath:" + contextPath +
                         ",resourcePath:" + resourcePath);
                 Class<? extends Servlet> servletClass = (Class<? extends Servlet>) Class.forName(startWebServerServletClass);
@@ -65,6 +67,17 @@ public class StartWebServer {
                 server.setHandler(webAppContext);
                 // 启动web服务器
                 server.start();
+                // 启动调度器
+                String schedulerStart = properties.getProperty("schedulerStart");
+                if ("true".equals(schedulerStart)) {
+                    QuartzManager quartzManager = QuartzManager.getInstance();
+                    List<Scheduler> schedulers = quartzManager.getSchedulers();
+                    for (Scheduler scheduler : schedulers) {
+                        scheduler.start();
+                    }
+                }
+
+
             } catch (Exception e) {
                 e.printStackTrace();
             }

@@ -13,8 +13,6 @@ import org.quartz.TriggerKey;
 import org.quartz.impl.SchedulerRepository;
 import org.quartz.impl.StdSchedulerFactory;
 import org.quartz.impl.matchers.GroupMatcher;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -46,8 +44,6 @@ public class QuartzUtils {
     public static Scheduler getScheduler(String schedName) {
         return SchedulerRepository.getInstance().lookup(schedName);
     }
-
-    private static Logger logger = LoggerFactory.getLogger(IOUtils.class);
 
     private static boolean isQuartz2() {
         try {

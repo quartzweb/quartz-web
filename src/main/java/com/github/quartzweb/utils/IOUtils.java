@@ -3,8 +3,7 @@
  */
 package com.github.quartzweb.utils;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.github.quartzweb.log.LOG;
 
 import java.io.ByteArrayOutputStream;
 import java.io.Closeable;
@@ -22,7 +21,6 @@ import java.io.UnsupportedEncodingException;
  */
 public class IOUtils {
 
-    private static Logger logger = LoggerFactory.getLogger(IOUtils.class);
 
     public final static int DEFAULT_BUFFER_SIZE = 1024 * 4;
 
@@ -77,11 +75,10 @@ public class IOUtils {
         if (x == null) {
             return;
         }
-
         try {
             x.close();
         } catch (Exception e) {
-            logger.debug("close error", e);
+            LOG.debug("close error", e);
         }
     }
 

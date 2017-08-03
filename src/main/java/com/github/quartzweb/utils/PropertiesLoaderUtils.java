@@ -3,8 +3,7 @@
  */
 package com.github.quartzweb.utils;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.github.quartzweb.log.LOG;
 
 import java.io.File;
 import java.io.IOException;
@@ -19,8 +18,6 @@ import java.util.Set;
  */
 public class PropertiesLoaderUtils {
 
-    private static Logger logger = LoggerFactory.getLogger(PropertiesLoaderUtils.class);
-
     /**
      * 加载properties文件,只加载文件结尾.properties的文件
      * @param resourcesPaths 文件路径(文件/路径)
@@ -29,7 +26,7 @@ public class PropertiesLoaderUtils {
     public static Properties loadProperties(String... resourcesPaths){
         Properties props = new Properties();
         for (String location : resourcesPaths) {
-            logger.debug("Loading properties file from:" + location);
+            LOG.debug("Loading properties file from:" + location);
             InputStream is = null;
             try {
                 ClassLoader classLoader = PropertiesLoaderUtils.class.getClassLoader();
@@ -45,7 +42,7 @@ public class PropertiesLoaderUtils {
                                     continue;
                                 }
                                 Properties propsTemp = new Properties();
-                                logger.debug("【加载配置文件】" + propFile.getName());
+                                LOG.debug("【加载配置文件】" + propFile.getName());
                                 is = classLoader.getResourceAsStream(location+"/"+propFile.getName());
                                 propsTemp.load(is);
                                 Set<Object> keySet = propsTemp.keySet();
@@ -62,7 +59,7 @@ public class PropertiesLoaderUtils {
                 }
             } catch (Exception ex) {
                 ex.printStackTrace();
-                logger.error("Could not load properties from path:" + location + ", " + ex.getMessage());
+                LOG.error("Could not load properties from path:" + location + ", " + ex.getMessage(), ex);
             } finally {
                 try {
                     if (is != null) {
@@ -70,6 +67,7 @@ public class PropertiesLoaderUtils {
                     }
                 } catch (IOException ignored) {
                     // ignore
+                    LOG.debug("io close error", ignored);
                 }
             }
 

@@ -3,8 +3,6 @@
  */
 package com.github.quartzweb.utils;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.regex.Pattern;
 
@@ -13,8 +11,6 @@ import java.util.regex.Pattern;
  * @author quxiucheng [quxiuchengdev@gmail.com]
  */
 public class StringUtils {
-
-    private static Logger logger = LoggerFactory.getLogger(StringUtils.class);
 
     /**
      * 判断两个字符串是否相等
