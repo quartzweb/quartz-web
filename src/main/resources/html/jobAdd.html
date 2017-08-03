@@ -9,6 +9,7 @@
     <link href="css/bootstrap-table.min.css" rel="stylesheet">
     <link href="css/bootstrapValidator.min.css" rel="stylesheet">
     <link href="css/bootstrap-datetimepicker.min.css" rel="stylesheet">
+    <link href="css/select2.min.css" rel="stylesheet">
     <link href='css/common.css' rel="stylesheet" />
 
     <script type="text/javascript" src="js/jquery.min.js"></script>
@@ -21,7 +22,17 @@
     <script src="js/bootstrapValidator.min.js"></script>
     <script src="js/bootstrap-datetimepicker.min.js"></script>
     <script src="js/zh_CN.min.js"></script>
+    <script src="js/select2.min.js"></script>
     <script type="text/javascript" src="js/common.js" charset="utf8"></script>
+    <style>
+        .select2-container .select2-selection--single{
+            height: 36px;
+            line-height: 36px;
+        }
+        .select2-container--default .select2-selection--single .select2-selection__rendered {
+            line-height: 36px;
+        }
+    </style>
 </head>
 <body>
 <div style="float:right;margin-right:20px;">
@@ -103,7 +114,7 @@
                                 <div class="row" style="margin-bottom: 10px;margin-top: 10px;">
                                     <div class="col-xs-12 col-md-12 col-lg-12">
                                         <!--option注意，紧密，取消空格-->
-                                        <select class="form-control" id="jobClassParamTypeSelect" onchange="quartzweb.jobAdd.createParamType(this,'jobClassParamType')">
+                                        <select class="form-control selectpicker" data-live-search="true" id="jobClassParamTypeSelect" onchange="quartzweb.jobAdd.createParamType(this,'jobClassParamType')">
                                             {{ for(var constructor in it.constructorInfo) { }}
                                             <option value="{{=it.constructorInfo[constructor]}}">{{? !it.constructorInfo[constructor].length}}non-parameter constructor{{??}}{{=it.constructorInfo[constructor]}}{{?}}</option>
                                             {{ }}}
@@ -184,7 +195,7 @@
                                 <div class="row" style="margin-bottom: 10px;margin-top: 10px;">
                                     <div class="col-xs-12 col-md-12 col-lg-12">
                                         <!--option注意，紧密，取消空格-->
-                                        <select class="form-control" id="jobClassMethodParamTypeSelect" name="jobClassMethodName" onchange="quartzweb.jobAdd.createParamType(this,'jobClassMethodParamType')">
+                                        <select class="form-control selectpicker" data-live-search="true" id="jobClassMethodParamTypeSelect" name="jobClassMethodName" onchange="quartzweb.jobAdd.createParamType(this,'jobClassMethodParamType')">
                                             {{ for(var method in it.methodInfo) { }}
                                                 {{ for(var methodDetail in it.methodInfo[method]) { }}
                                                     <option value="{{= methodDetail}}">{{= methodDetail}}{{=it.methodInfo[method][methodDetail]}}</option>
@@ -403,12 +414,15 @@
                                                                 $("#jobClassParamTypeDiv").html(contentHtml);
                                                                 // 设置方法参数
                                                                 var methodtmpl = $('#jobClassMethodParamType-tmpl').html();
+
                                                                 var methoddoTtmpl = doT.template(methodtmpl);
 
                                                                 console.log(data.content)
                                                                 var methodcontentHtml = methoddoTtmpl(data.content);
                                                                 $("#jobClassMethodParamTypeDiv").html(methodcontentHtml);
 
+                                                                // 设置select搜索
+                                                                $('.selectpicker').select2();
                                                                 quartzweb.jobAdd.createParamType($("#jobClassParamTypeSelect"),"jobClassParamType");
                                                                 quartzweb.jobAdd.createParamType($("#jobClassMethodParamTypeSelect"),"jobClassMethodParamType");
                                                             }
