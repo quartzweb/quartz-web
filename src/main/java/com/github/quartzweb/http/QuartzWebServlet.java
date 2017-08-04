@@ -14,7 +14,7 @@ import javax.servlet.http.HttpServletResponse;
  * 负责处理业务servlet
  * @author quxiucheng [quxiuchengdev@gmail.com]
  */
-public class QuartzWebServlet extends ResourceServlet {
+public class QuartzWebServlet extends SecurityServlet {
 
     public static final String PARAM_RESOURCE_PATH = "resourcePath";
 
@@ -37,8 +37,9 @@ public class QuartzWebServlet extends ResourceServlet {
     /**
      * {@inheritDoc}
      */
-    protected String process(String url, HttpServletRequest request, HttpServletResponse response) {
-        return quartzWebService.service(url, request, response);
+    protected String process(String path, HttpServletRequest request, HttpServletResponse response) {
+        return quartzWebService.service(path, request, response);
     }
+
 
 }

@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
+ * 实际处理业务 Servlet
  * @author quxiucheng [quxiuchengdev@gmail.com]
  */
 public class QuartzWebService {
@@ -30,15 +31,18 @@ public class QuartzWebService {
     private ServiceStrategyFactory serviceStrategyFactory = new DefaultServiceStrategyFactory();
 
 
-    public String service(String url, HttpServletRequest request, HttpServletResponse response) {
+    /**
+     * {@inheritDoc}
+     */
+    public String service(String path, HttpServletRequest request, HttpServletResponse response) {
 
         try {
 
             LOG.debug("request:" + LOG.buildLogMessage(request));
-            ServiceStrategy serviceStrategy = serviceStrategyFactory.createStrategy(url);
+            ServiceStrategy serviceStrategy = serviceStrategyFactory.createStrategy(path);
             ServiceStrategyParameter parameter = serviceStrategy.newServiceStrategyParameterInstance();
             parameter.translate(request);
-            ServiceStrategyURL serviceStrategyURL = new DefaultServiceStrategyURL(url);
+            ServiceStrategyURL serviceStrategyURL = new DefaultServiceStrategyURL(path);
             QuartzWebServiceContext context = new QuartzWebServiceContext(serviceStrategy);
             String json = context.service(serviceStrategyURL, parameter).json();
             LOG.debug("json result:" + json.toLowerCase());

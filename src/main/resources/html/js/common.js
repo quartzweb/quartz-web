@@ -20,6 +20,21 @@ quartzweb.common =function () {
         init: function () {
             //alert("init");
         },
+        logout: function () {
+            $.ajax({
+                type: 'POST',
+                url: "submitLogout",
+                dataType: "text",
+                success: function(data) {
+                    if("success" == data)
+                        location.href = "index.html";
+                    else {
+                        alert("error");
+                    }
+                }
+
+            });
+        },
         /**
          * 根据序列,创建HTML头部(header)信息
          * 序列用户激活active属性

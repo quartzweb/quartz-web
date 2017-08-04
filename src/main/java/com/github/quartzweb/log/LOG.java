@@ -165,12 +165,12 @@ final public class LOG {
      * @return log实例
      */
     private static QuartzWebLogger getQuartzWebLogger(){
-        if (LOGBACK_ENABLED) {
+        if (LOG4J_ENABLED) {
+            return new Log4JLogger();
+        } else if (LOGBACK_ENABLED) {
             return new LogbackLogger();
         } else if (LOG4J2_ENABLED) {
             return new Log4J2Logger();
-        } else if (LOG4J_ENABLED) {
-            return new Log4JLogger();
         } else {
             return new JavaLogger();
         }

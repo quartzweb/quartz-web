@@ -34,13 +34,15 @@ abstract class ResourceServlet extends HttpServlet {
      */
     private String servicePathPrefix = "/api/";
 
-    public static final String SESSION_USER_KEY = "quartz-web-user";
-    public static final String INIT_NAME_USER = "quartWebUser";
-    public static final String PARAM_NAME_USERNAME = "loginUsername";
-    public static final String PARAM_NAME_PASSWORD = "loginPassword";
-    public static final String PARAM_NAME_ALLOW = "allow";
-    public static final String PARAM_NAME_DENY = "deny";
-    public static final String PARAM_REMOTE_ADDR = "remoteAddress";
+    /**
+     * 登录处理路径
+     */
+    private String authcPath = "/submitLogin";
+
+    /**
+     * 退出路径
+     */
+    private String logoutPath = "/submitLogout";
 
     /**
      * 用户信息
@@ -50,28 +52,8 @@ abstract class ResourceServlet extends HttpServlet {
 
     public void init() throws ServletException {
         super.init();
-        initAuth();
     }
 
-    /**
-     * 初始化权限信息
-     */
-    private void initAuth() {
-        // 获取用户配置信息
-        String quartWebUser = getInitParameter(INIT_NAME_USER);
-        if (!StringUtils.isEmpty(quartWebUser)) {
-            String[] quartWebUsers = quartWebUser.split(";");
-            if (quartWebUsers.length > 0) {
-                for (String webUser : quartWebUsers) {
-                    String[] webUserInfo = webUser.split(":");
-                    if (webUserInfo.length != 2) {
-                        throw new IllegalArgumentException("quartWebUser format exception.form username:password;username:password");
-                    }
-                    userInfo.put(webUserInfo[0], webUserInfo[1]);
-                }
-            }
-        }
-    }
 
     /**
      * 复写父类service方法，进行请求转发
@@ -96,38 +78,22 @@ abstract class ResourceServlet extends HttpServlet {
         }
         String uri = contextPath + servletPath;
         String path = requestURI.substring(contextPath.length() + servletPath.length());
-
-        if ("/submitLogin".equals(path)) {
-            String usernameParam = request.getParameter(PARAM_NAME_USERNAME);
-            String passwordParam = request.getParameter(PARAM_NAME_PASSWORD);
-            if (this.userInfo.containsKey(usernameParam) && this.userInfo.get(usernameParam).equals(passwordParam)) {
-                request.getSession().setAttribute(SESSION_USER_KEY, usernameParam);
-                response.getWriter().print("success");
-            } else {
-                response.getWriter().print("error");
-            }
+        // request是否合法
+        if (!isPermittedRequest(request, response)) {
             return;
         }
-
-        if (isRequireAuth() //
-                && !containsUser(request)//
-                && !checkLoginParam(request)//
-                && !("/login.html".equals(path) //
-                || path.startsWith("/css")//
-                || path.startsWith("/js") //
-                || path.startsWith("/img"))) {
-            if (contextPath.equals("") || contextPath.equals("/")) {
-                response.sendRedirect(servletPath + "/login.html");
-                return;
-            } else {
-                if (uri.endsWith("/")) {
-                    response.sendRedirect(uri + "login.html");
-                } else {
-                    response.sendRedirect(uri + "/login.html");
-                }
-                return;
-            }
-
+        //
+        if ("/submitLogin".equals(path)) {
+            response.getWriter().print(this.submitLogin(path, request, response));
+            return;
+        }
+        if ("/submitLogout".equals(path)) {
+            response.getWriter().print(this.submitLogout(path, request, response));
+            return;
+        }
+        // 没有权限直接返回
+        if (!hasPermission(path, request, response)) {
+            return;
         }
 
         if ("".equals(path)) {
@@ -145,16 +111,13 @@ abstract class ResourceServlet extends HttpServlet {
 
         if (path.startsWith(servicePathPrefix)) {
             LOG.debug("path:" + path);
-            //String fullUrl = path;
-            /*if (request.getQueryString() != null && request.getQueryString().length() > 0) {
-                fullUrl += "?" + request.getQueryString();
-            }*/
             response.getWriter().print(this.process(path, request, response));
             return;
         }
         // 其他
         this.returnResourceFile(path, uri, response);
     }
+
 
     /**
      * 返回资源文件
@@ -207,35 +170,6 @@ abstract class ResourceServlet extends HttpServlet {
         response.getWriter().write(text);
     }
 
-    public boolean containsUser(HttpServletRequest request) {
-        HttpSession session = request.getSession(false);
-        return session != null && session.getAttribute(SESSION_USER_KEY) != null;
-    }
-
-    public boolean checkLoginParam(HttpServletRequest request) {
-        String usernameParam = request.getParameter(PARAM_NAME_USERNAME);
-        String passwordParam = request.getParameter(PARAM_NAME_PASSWORD);
-        if(null == this.userInfo.get(usernameParam)){
-            return false;
-        } else if (this.userInfo.containsKey(usernameParam) && this.userInfo.get(usernameParam).equals(passwordParam)) {
-            return true;
-        }
-        return false;
-    }
-
-    public boolean isRequireAuth() {
-        return this.userInfo.size() != 0;
-    }
-
-    /**
-     * 获取某个文件的资源路径
-     *
-     * @param fileName 文件名
-     * @return 资源路径 + 文件名
-     */
-    protected String getFilePath(String fileName) {
-        return getResourcePath() + fileName;
-    }
 
     /**
      * 获取资源路径
@@ -275,9 +209,106 @@ abstract class ResourceServlet extends HttpServlet {
         this.servicePathPrefix = servicePathPrefix;
     }
 
+
+    /**
+     * 获取 登录处理路径
+     * @return authcPath 登录处理路径
+     */
+    public String getAuthcPath() {
+        return this.authcPath;
+    }
+
+    /**
+     * 设置 登录处理路径
+     * @param authcPath 登录处理路径
+     */
+    public void setAuthcPath(String authcPath) {
+        LOG.debug("authcPath:" + authcPath);
+        this.authcPath = authcPath;
+    }
+
+    /**
+     * 获取 退出路径
+     * @return logoutPath 退出路径
+     */
+    public String getLogoutPath() {
+        return this.logoutPath;
+    }
+
+    /**
+     * 设置 退出路径
+     * @param logoutPath 退出路径
+     */
+    public void setLogoutPath(String logoutPath) {
+        LOG.debug("logoutPath:" + authcPath);
+        this.logoutPath = logoutPath;
+    }
+
+    /**
+     * 获取某个文件的资源路径
+     *
+     * @param fileName 文件名
+     * @return 资源路径 + 文件名
+     */
+    protected String getFilePath(String fileName) {
+        return getResourcePath() + fileName;
+    }
+
+
+    /**
+     * 核查请求是否允许
+     * @param request request请求
+     * @return true允许,false不允许
+     * @throws ServletException 异常
+     * @throws IOException 异常
+     */
+    protected abstract boolean isPermittedRequest(HttpServletRequest request,HttpServletResponse response) throws ServletException, IOException;
+    /**
+     * 登录处理
+     * @param path 登录处理路径
+     * @param request request对象
+     * @param response response对象
+     * @return 处理结果
+     * @throws ServletException 异常
+     * @throws IOException 异常
+     */
+    protected abstract String submitLogin(String path, HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException;
+
+    /**
+     * 注销处理
+     * @param path 登录处理路径
+     * @param request request对象
+     * @param response response对象
+     * @return 处理结果
+     * @throws ServletException 异常
+     * @throws IOException 异常
+     */
+    protected abstract String submitLogout(String path, HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException;
+    /**
+     * 是否有权限
+     * @param path 路径
+     * @param request request对象
+     * @param response response对象
+     * @return 是否有权限 true有权限,false无权限
+     * @throws ServletException 异常
+     * @throws IOException 异常
+     */
+    protected abstract boolean hasPermission(String path, HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException;
+
+
     /**
      * 实际处理业务详情
+     * @param path 路径
+     * @param request request对象
+     * @param response response对象
+     * @return 返回详情
+     * @throws ServletException 异常
+     * @throws IOException 异常
      */
-    protected abstract String process(String fullUrl, HttpServletRequest request, HttpServletResponse response);
+    protected abstract String process(String path, HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException;
 
 }
