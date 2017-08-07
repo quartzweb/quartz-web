@@ -32,6 +32,8 @@ import java.util.Map;
 import java.util.Set;
 
 /**
+ * Web层处理管理器,处理Web页面的所需要的信息
+ *
  * @author quxiucheng [quxiuchengdev@gmail.com]
  */
 public class QuartzWebManager {
@@ -49,24 +51,21 @@ public class QuartzWebManager {
 
     private static QuartzBeanManagerFacade quartzBeanManagerFacade = QuartzBeanManagerFacade.getInstance();
 
-    public static Map<String, Object> getBasicInfo() {
-        Map<String, Object> dataMap = new LinkedHashMap<String, Object>();
+    public static BasicInfo getBasicInfo() {
         String versionIteration = QuartzScheduler.getVersionIteration();
         String versionMajor = QuartzScheduler.getVersionMajor();
         String versionMinor = QuartzScheduler.getVersionMinor();
-
-        dataMap.put("quartzWebVersion", VERSION.getVersionNumber());
-        dataMap.put("versionMajor", versionMajor);
-        dataMap.put("versionMinor", versionMinor);
-        dataMap.put("versionIteration", versionIteration);
-
-        dataMap.put("quartzVersion", versionMajor + "." + versionMinor + "." + versionIteration);
-
-        dataMap.put("javaVMStartTime", DateUtils.getVMStartTime());
-        dataMap.put("javaVMName", System.getProperty("java.vm.name"));
-        dataMap.put("javaVersion", System.getProperty("java.version"));
-        dataMap.put("javaClassPath", System.getProperty("java.class.path"));
-        return dataMap;
+        BasicInfo basicInfo = new BasicInfo();
+        basicInfo.setQuartzWebVersion(VERSION.getVersionNumber());
+        basicInfo.setVersionMajor(versionMajor);
+        basicInfo.setVersionMinor(versionMinor);
+        basicInfo.setVersionIteration(versionIteration);
+        basicInfo.setQuartzVersion(versionMajor + "." + versionMinor + "." + versionIteration);
+        basicInfo.setJavaVMStartTime(DateUtils.getVMStartTime());
+        basicInfo.setJavaVMName(System.getProperty("java.vm.name"));
+        basicInfo.setJavaVersion(System.getProperty("java.version"));
+        basicInfo.setJavaClassPath(System.getProperty("java.class.path"));
+        return basicInfo;
     }
 
     /**
@@ -75,14 +74,15 @@ public class QuartzWebManager {
      * @return 返回基本信息的Map
      * @throws SchedulerException 异常
      */
-    public static List<Map<String, Object>> getAllSchedulerInfo() throws SchedulerException {
-        List<Map<String, Object>> dataList = new ArrayList<Map<String, Object>>();
+    public static List<SchedulerInfo> getAllSchedulerInfo() throws SchedulerException {
+        List<SchedulerInfo> schedulerInfos = new ArrayList<SchedulerInfo>();
         Collection<Scheduler> allSchedulers = quartzManager.getSchedulers();
 
         for (Scheduler scheduler : allSchedulers) {
             // 获取Job数量
             List<JobDetail> allJobsOfScheduler = QuartzUtils.getAllJobsOfScheduler(scheduler);
 
+            int triggerCount = 0;
             // 错误Trigger数量
             int triggerErrorCount = 0;
             // 堵塞Trigger数量
@@ -92,6 +92,7 @@ public class QuartzWebManager {
             for (JobDetail jobDetail : allJobsOfScheduler) {
                 List<? extends Trigger> triggersOfJob = QuartzUtils.getTriggersOfJob(jobDetail, scheduler);
                 for (Trigger trigger : triggersOfJob) {
+                    triggerCount++;
                     boolean isError = QuartzUtils.isTriggerError(trigger, scheduler);
                     if (isError) {
                         triggerErrorCount++;
@@ -109,7 +110,7 @@ public class QuartzWebManager {
             }
 
             // schedulerConext中参数Map
-            List<Map<String, Object>> schedulerConextMapList = new ArrayList<Map<String, Object>>();
+            List<Map<String, Object>> schedulerContextMapList = new ArrayList<Map<String, Object>>();
             SchedulerContext context = scheduler.getContext();
             Set<String> contextKeySet = context.keySet();
             for (String contextKey : contextKeySet) {
@@ -124,28 +125,28 @@ public class QuartzWebManager {
                     contextMap.put("key", contextKey);
                     contextMap.put("value", contextKeyObj.toString());
                 }
-                schedulerConextMapList.add(contextMap);
+                schedulerContextMapList.add(contextMap);
             }
 
-            Map<String, Object> schedulerInfoMap = new LinkedHashMap<String, Object>();
-          /*  schedulerInfoMap.put("schedulerInstanceId", scheduler.getSchedulerInstanceId());*/
-            schedulerInfoMap.put("schedulerName", scheduler.getSchedulerName());
-            schedulerInfoMap.put("isShutdown", scheduler.isShutdown());
-            schedulerInfoMap.put("isStarted", scheduler.isStarted());
-            schedulerInfoMap.put("isInStandbyMode", scheduler.isInStandbyMode());
+
+            SchedulerInfo schedulerInfo = new SchedulerInfo();
+            schedulerInfo.setSchedulerName(scheduler.getSchedulerName());
+            schedulerInfo.setShutdown(scheduler.isShutdown());
+            schedulerInfo.setStarted(scheduler.isStarted());
+            schedulerInfo.setInStandbyMode(scheduler.isInStandbyMode());
             // 设置job数量
-            schedulerInfoMap.put("jobCount", allJobsOfScheduler.size());
+            schedulerInfo.setJobCount(allJobsOfScheduler.size());
             // 设置数量
-            schedulerInfoMap.put("triggerErrorCount", triggerErrorCount);
-            schedulerInfoMap.put("triggerBlockedCount", triggerBlockedCount);
-            schedulerInfoMap.put("triggerPausedCount", triggerPausedCount);
-            // 设置schedulerConext
-            schedulerInfoMap.put("schedulerConext", schedulerConextMapList);
+            schedulerInfo.setTriggerCount(triggerCount);
+            schedulerInfo.setTriggerErrorCount(triggerErrorCount);
+            schedulerInfo.setTriggerBlockedCount(triggerBlockedCount);
+            schedulerInfo.setTriggerPausedCount(triggerPausedCount);
+            // 设置schedulerContext
+            schedulerInfo.setSchedulerContext(schedulerContextMapList);
 
-
-            dataList.add(schedulerInfoMap);
+            schedulerInfos.add(schedulerInfo);
         }
-        return dataList;
+        return schedulerInfos;
     }
 
 
@@ -184,56 +185,52 @@ public class QuartzWebManager {
      * @return
      * @throws SchedulerException
      */
-    public static Map<String, Object> getAllJobInfo() throws SchedulerException {
+    public static JobInfosVO getAllJobInfo() throws SchedulerException {
 
         Collection<Scheduler> allSchedulers = quartzManager.getSchedulers();
-        Map<String, Object> jobInfo = new LinkedHashMap<String, Object>();
+        JobInfosVO jobInfosVO = new JobInfosVO();
         for (Scheduler scheduler : allSchedulers) {
             List<JobDetail> allJobs = QuartzUtils.getAllJobsOfScheduler(scheduler);
-            List<Map<String, Object>> jobMapList = new ArrayList<Map<String, Object>>();
+            List<JobInfo> jobInfos = new ArrayList<JobInfo>();
+
             for (JobDetail jobDetail : allJobs) {
-                Map<String, Object> jobMap = new LinkedHashMap<String, Object>();
-                jobMap.put("jobName", QuartzUtils.getJobName(jobDetail));
-                jobMap.put("jobGroup", QuartzUtils.getJobGroup(jobDetail));
-                jobMap.put("jobClass", jobDetail.getJobClass().getName());
-
-                // 是否并发运行
-                jobMap.put("isConcurrentExectionDisallowed", jobDetail.isConcurrentExectionDisallowed());
-                // 是否实例化
-                jobMap.put("isDurable", jobDetail.isDurable());
-                // 时候执行后保存JobData
-                jobMap.put("isPersistJobDataAfterExecution", jobDetail.isPersistJobDataAfterExecution());
-                jobMap.put("jobDataMap", jobDetail.getJobDataMap());
-                jobMap.put("description", jobDetail.getDescription());
-                jobMapList.add(jobMap);
+                JobInfo jobInfo = new JobInfo();
+                jobInfo.setSchedulerName(scheduler.getSchedulerName());
+                jobInfo.setJobName(QuartzUtils.getJobName(jobDetail));
+                jobInfo.setJobGroup(QuartzUtils.getJobGroup(jobDetail));
+                jobInfo.setJobClass(jobDetail.getJobClass().getName());
+                jobInfo.setConcurrentExectionDisallowed(jobDetail.isConcurrentExectionDisallowed());
+                jobInfo.setDurable(jobDetail.isDurable());
+                jobInfo.setPersistJobDataAfterExecution(jobDetail.isPersistJobDataAfterExecution());
+                jobInfo.setJobDataMap(jobDetail.getJobDataMap());
+                jobInfo.setDescription(jobDetail.getDescription());
+                jobInfos.add(jobInfo);
             }
-
-            jobInfo.put(scheduler.getSchedulerName(), jobMapList);
+            jobInfosVO.addJobInfos(scheduler.getSchedulerName(), jobInfos);
         }
-        return jobInfo;
+
+        return jobInfosVO;
     }
 
-    public static List<Map<String, Object>> getAllJobInfo(String schedulerName) throws SchedulerException {
+    public static List<JobInfo> getAllJobInfo(String schedulerName) throws SchedulerException {
 
         List<JobDetail> allJobs = quartzManager.getAllJobsOfScheduler(schedulerName);
-        List<Map<String, Object>> jobMapList = new ArrayList<Map<String, Object>>();
-        for (JobDetail jobDetail : allJobs) {
-            Map<String, Object> jobMap = new LinkedHashMap<String, Object>();
-            jobMap.put("jobName", QuartzUtils.getJobName(jobDetail));
-            jobMap.put("jobGroup", QuartzUtils.getJobGroup(jobDetail));
-            jobMap.put("jobClass", jobDetail.getJobClass().getName());
+        List<JobInfo> jobInfos = new ArrayList<JobInfo>();
 
-            // 是否并发运行
-            jobMap.put("isConcurrentExectionDisallowed", jobDetail.isConcurrentExectionDisallowed());
-            // 是否实例化
-            jobMap.put("isDurable", jobDetail.isDurable());
-            // 时候执行后保存JobData
-            jobMap.put("isPersistJobDataAfterExecution", jobDetail.isPersistJobDataAfterExecution());
-            jobMap.put("jobDataMap", jobDetail.getJobDataMap());
-            jobMap.put("description", jobDetail.getDescription());
-            jobMapList.add(jobMap);
+        for (JobDetail jobDetail : allJobs) {
+            JobInfo jobInfo = new JobInfo();
+            jobInfo.setSchedulerName(schedulerName);
+            jobInfo.setJobName(QuartzUtils.getJobName(jobDetail));
+            jobInfo.setJobGroup(QuartzUtils.getJobGroup(jobDetail));
+            jobInfo.setJobClass(jobDetail.getJobClass().getName());
+            jobInfo.setConcurrentExectionDisallowed(jobDetail.isConcurrentExectionDisallowed());
+            jobInfo.setDurable(jobDetail.isDurable());
+            jobInfo.setPersistJobDataAfterExecution(jobDetail.isPersistJobDataAfterExecution());
+            jobInfo.setJobDataMap(jobDetail.getJobDataMap());
+            jobInfo.setDescription(jobDetail.getDescription());
+            jobInfos.add(jobInfo);
         }
-        return jobMapList;
+        return jobInfos;
     }
 
     /**
@@ -270,46 +267,47 @@ public class QuartzWebManager {
         return triggers;
     }
 
-    public static List<Map<String, Object>> getTriggerInfo(String schedulerName, String jobName, String jobGroup) throws SchedulerException {
+    public static List<TriggerInfo> getTriggerInfo(String schedulerName, String jobName, String jobGroup) throws SchedulerException {
+
         // 最终返回数据
-        List<Map<String, Object>> dataList = new ArrayList<Map<String, Object>>();
         List<? extends Trigger> triggersOfJob = getTriggers(schedulerName, jobName, jobGroup);
+        List<TriggerInfo> triggerInfos = new ArrayList<TriggerInfo>();
         for (Trigger trigger : triggersOfJob) {
-            Map<String, Object> triggerMap = new LinkedHashMap<String, Object>();
-            triggerMap.put("schedulerName", schedulerName);
-            triggerMap.put("jobName", jobName);
-            triggerMap.put("jobGroup", jobGroup);
-            triggerMap.put("triggerName", QuartzUtils.getTriggerName(trigger));
-            triggerMap.put("triggerGroup", QuartzUtils.getTriggerGroup(trigger));
+            TriggerInfo triggerInfo = new TriggerInfo();
+            triggerInfo.setSchedulerName(schedulerName);
+            triggerInfo.setJobName(jobName);
+            triggerInfo.setJobGroup(jobGroup);
+            triggerInfo.setTriggerName(QuartzUtils.getTriggerName(trigger));
+            triggerInfo.setTriggerGroup(QuartzUtils.getTriggerGroup(trigger));
             // 上次触发时间
-            triggerMap.put("previousFireTime", trigger.getPreviousFireTime());
+            triggerInfo.setPreviousFireTime(trigger.getPreviousFireTime());
             // 下次触发时间
-            triggerMap.put("nextFireTime", trigger.getNextFireTime());
+            triggerInfo.setNextFireTime(trigger.getNextFireTime());
             // 优先级
-            triggerMap.put("priority", trigger.getPriority());
-            triggerMap.put("startTime", trigger.getStartTime());
-            triggerMap.put("endTime", trigger.getEndTime());
+            triggerInfo.setPriority(trigger.getPriority());
+            triggerInfo.setStartTime(trigger.getStartTime());
+            triggerInfo.setEndTime(trigger.getEndTime());
             //获取misfire的值，默认为0
-            triggerMap.put("misfireInstruction", trigger.getMisfireInstruction());
+            triggerInfo.setMisfireInstruction(trigger.getMisfireInstruction());
             // 最后触发时间
-            triggerMap.put("finalFireTime", trigger.getFinalFireTime());
+            triggerInfo.setFinalFireTime(trigger.getFinalFireTime());
             // 某个时间后的触发时间
-            triggerMap.put("fireTimeAfter", trigger.getFireTimeAfter(new Date()));
+            triggerInfo.setFireTimeAfter(trigger.getFireTimeAfter(new Date()));
             // 日历名称
-            triggerMap.put("calendarName", trigger.getCalendarName());
+            triggerInfo.setCalendarName(trigger.getCalendarName());
             // 描述
-            triggerMap.put("description", trigger.getDescription());
-            triggerMap.put("triggerState", quartzManager.getTriggerState(schedulerName, trigger).name());
+            triggerInfo.setDescription(trigger.getDescription());
+            triggerInfo.setTriggerState(quartzManager.getTriggerState(schedulerName, trigger).name());
             if (trigger instanceof CronTrigger) {
                 CronTrigger cronTrigger = (CronTrigger) trigger;
-                triggerMap.put("cronExpression", cronTrigger.getCronExpression());
+                triggerInfo.setCronExpression(cronTrigger.getCronExpression());
             } else {
-                triggerMap.put("cronExpression", "");
+                triggerInfo.setCronExpression("");
             }
-            dataList.add(triggerMap);
+            triggerInfos.add(triggerInfo);
         }
 
-        return dataList;
+        return triggerInfos;
     }
 
     /**

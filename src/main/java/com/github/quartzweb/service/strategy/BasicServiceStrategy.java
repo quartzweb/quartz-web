@@ -3,6 +3,7 @@
  */
 package com.github.quartzweb.service.strategy;
 
+import com.github.quartzweb.manager.web.BasicInfo;
 import com.github.quartzweb.manager.web.QuartzWebManager;
 import com.github.quartzweb.service.JSONResult;
 import com.github.quartzweb.service.QuartzWebURL;
@@ -30,8 +31,8 @@ public class BasicServiceStrategy implements ServiceStrategy<BasicServiceStrateg
 
     public JSONResult getInfo() {
         try {
-            Map<String, Object> resultMap = QuartzWebManager.getBasicInfo();
-            return JSONResult.build(JSONResult.RESULT_CODE_SUCCESS, resultMap);
+            BasicInfo basicInfo = QuartzWebManager.getBasicInfo();
+            return JSONResult.build(JSONResult.RESULT_CODE_SUCCESS, basicInfo);
         } catch (Exception e) {
             e.printStackTrace();
             return JSONResult.build(JSONResult.RESULT_CODE_ERROR, e.getMessage());

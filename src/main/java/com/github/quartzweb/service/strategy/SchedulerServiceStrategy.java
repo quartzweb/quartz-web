@@ -4,6 +4,7 @@
 package com.github.quartzweb.service.strategy;
 
 import com.github.quartzweb.manager.web.QuartzWebManager;
+import com.github.quartzweb.manager.web.SchedulerInfo;
 import com.github.quartzweb.service.JSONResult;
 import com.github.quartzweb.service.QuartzWebURL;
 import com.github.quartzweb.utils.Assert;
@@ -59,8 +60,8 @@ public class SchedulerServiceStrategy implements ServiceStrategy<SchedulerServic
 
     public JSONResult getInfo(){
         try {
-            List<Map<String, Object>> resultMapList = QuartzWebManager.getAllSchedulerInfo();
-            return JSONResult.build(JSONResult.RESULT_CODE_SUCCESS, resultMapList);
+            List<SchedulerInfo> schedulerInfos = QuartzWebManager.getAllSchedulerInfo();
+            return JSONResult.build(JSONResult.RESULT_CODE_SUCCESS, schedulerInfos);
         } catch (Exception e) {
             e.printStackTrace();
             return JSONResult.build(JSONResult.RESULT_CODE_ERROR, e.getMessage());

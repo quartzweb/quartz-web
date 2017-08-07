@@ -70,6 +70,11 @@
                                 <td>(job)作业数量</td>
                             </tr>
                             <tr>
+                                <td>triggerCount</td>
+                                <td>int</td>
+                                <td>(trigger)触发器数量</td>
+                            </tr>
+                            <tr>
                                 <td>triggerErrorCount</td>
                                 <td>int</td>
                                 <td>(trigger)触发器错误数量</td>
@@ -85,9 +90,9 @@
                                 <td>(trigger)触发器暂停数量</td>
                             </tr>
                             <tr>
-                                <td>schedulerConext</td>
+                                <td>schedulerContext</td>
                                 <td>json array</td>
-                                <td>key-value的自定义的schedulerConext参数</td>
+                                <td>key-value的自定义的schedulerContext参数</td>
                             </tr>
                         </table>
                     </div>
@@ -115,10 +120,11 @@
                                     "isStarted": false,
                                     "isInStandbyMode": true,
                                     "jobCount": 2,
+                                    "triggerCount": 2,
                                     "triggerErrorCount": 0,
                                     "triggerBlockedCount": 0,
                                     "triggerPausedCount": 1,
-                                    "schedulerConext": []
+                                    "schedulerContext": []
                                     }
                                 ]
                             }

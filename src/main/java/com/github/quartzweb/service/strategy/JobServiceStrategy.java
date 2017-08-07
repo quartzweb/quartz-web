@@ -5,6 +5,7 @@ package com.github.quartzweb.service.strategy;
 
 import com.github.quartzweb.exception.UnsupportedClassException;
 import com.github.quartzweb.job.MethodInvoker;
+import com.github.quartzweb.manager.web.JobInfosVO;
 import com.github.quartzweb.manager.web.QuartzWebManager;
 import com.github.quartzweb.service.JSONResult;
 import com.github.quartzweb.service.QuartzWebURL;
@@ -110,8 +111,8 @@ public class JobServiceStrategy implements ServiceStrategy<JobServiceStrategyPar
      */
     public JSONResult getInfo() {
         try {
-            Map<String, Object> result = QuartzWebManager.getAllJobInfo();
-            return JSONResult.build(JSONResult.RESULT_CODE_SUCCESS, result);
+            JobInfosVO jobInfosVO = QuartzWebManager.getAllJobInfo();
+            return JSONResult.build(JSONResult.RESULT_CODE_SUCCESS, jobInfosVO);
         } catch (Exception e) {
             e.printStackTrace();
             return JSONResult.build(JSONResult.RESULT_CODE_ERROR, e.getMessage());

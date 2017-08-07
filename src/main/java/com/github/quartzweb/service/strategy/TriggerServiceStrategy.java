@@ -4,6 +4,7 @@
 package com.github.quartzweb.service.strategy;
 
 import com.github.quartzweb.manager.web.QuartzWebManager;
+import com.github.quartzweb.manager.web.TriggerInfo;
 import com.github.quartzweb.service.JSONResult;
 import com.github.quartzweb.service.QuartzWebURL;
 import com.github.quartzweb.utils.Assert;
@@ -78,11 +79,8 @@ public class TriggerServiceStrategy implements ServiceStrategy<TriggerServiceStr
 
     public JSONResult getInfo(String schedulerName, String jobName, String jobGroup) {
         try {
-            Assert.notEmpty(schedulerName,"schedulerName can not be empty");
-            Assert.notEmpty(jobName,"jobName can not be empty");
-            Assert.notEmpty(jobGroup,"jobGroup can not be empty");
-            List<Map<String, Object>> resultMapList = QuartzWebManager.getTriggerInfo(schedulerName, jobName, jobGroup);
-            return JSONResult.build(JSONResult.RESULT_CODE_SUCCESS, resultMapList);
+            List<TriggerInfo> triggerInfos = QuartzWebManager.getTriggerInfo(schedulerName, jobName, jobGroup);
+            return JSONResult.build(JSONResult.RESULT_CODE_SUCCESS, triggerInfos);
         } catch (Exception e) {
             e.printStackTrace();
             return JSONResult.build(JSONResult.RESULT_CODE_ERROR, e.getMessage());

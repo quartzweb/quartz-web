@@ -100,6 +100,12 @@
                                 </td>
                             </tr>
                             <tr>
+                                <td width="220px;" class="text-center td_lable">trigger count</td>
+                                <td class="text-left">
+                                    {{=schedulerInfo.triggerCount}}
+                                </td>
+                            </tr>
+                            <tr>
                                 <td width="220px;" class="text-center td_lable">trigger error count</td>
                                 <td class="text-left">
                                     {{=schedulerInfo.triggerErrorCount}}
@@ -120,8 +126,8 @@
                             <tr>
                                 <td width="220px;" class="text-center td_lable">scheduler conext</td>
                                 <td class="text-left">
-                                    {{? schedulerInfo.schedulerConext }}
-                                        {{~ schedulerInfo.schedulerConext :sc: j  }}
+                                    {{? schedulerInfo.schedulerContext }}
+                                        {{~ schedulerInfo.schedulerContext :sc: j  }}
                                             {{= sc.key }} = {{= sc.value }}<br>
                                         {{~ }}
                                     {{?}}
