@@ -27,11 +27,8 @@
             <h6><a class="langSelector" langNow="0">English</a> | <a class="langSelector" langNow="1">中文</a></h6>
         </div>
         <!--在jquery中用ajax加载导航信息-->
-        <div class="container">
+        <div class="container-fluid">
             <div id="banner">
-                <!--<h3>
-                    <a href="api/jobInfo.json" target="_blank" class="lang" langkey="ViewJSONAPI">JSON API</a>
-                </h3>-->
             </div>
             <div id="content">
             </div>
@@ -99,7 +96,8 @@
                                                 <a href="triggerAdd.html?schedulerName={{= schedulerJob }}&jobName={{= jobInfo.jobName }}&jobGroup={{= jobInfo.jobGroup }}">
                                                     add trigger|
                                                 </a>
-                                                <a href="trigger.html?schedulerName={{= schedulerJob }}&jobName={{= jobInfo.jobName }}&jobGroup={{= jobInfo.jobGroup }}&jobClass={{= jobInfo.jobClass }}">
+                                                <a href="trigger.html?schedulerName={{= schedulerJob }}&jobName={{= jobInfo.jobName }}
+                                                &jobGroup={{= jobInfo.jobGroup }}&jobClass={{= jobInfo.jobClass }}">
                                                     trigger manager|
                                                 </a>
                                                 <a  href="javascript:;"
@@ -196,6 +194,7 @@
                         $.ajax({
                             type: 'POST',
                             url: "api/jobInfo.json",
+                            dataType: "json",
                             success: function (data) {
                                 if (1 === data.resultCode) {
                                     var tmpl = $('#jobInfo-tmpl').html();
@@ -211,7 +210,6 @@
                                         striped:true,//隔行变成色
                                         showToggle: true,
                                         showColumns: true
-
                                     });
 
                                     //isConcurrentExectionDisallowed
@@ -221,7 +219,7 @@
                                     //isPersistJobDataAfterExecution
                                     $(".dataTableJob").bootstrapTable('hideColumn',5);
 
-
+                                    // 展开子标签
                                     $(".dataTableJob").on('expand-row.bs.table', function(e, index, row, $detail) {
                                         // 行ID
                                         var trId = this.id + "_" + index;
@@ -241,11 +239,11 @@
                                 } else {
                                     alert("system is error : " + data.content);
                                 }
+                            }
 
-                            },
-                            dataType: "json"
                         });
                     },
+                    // 请求具体Trigger数据
                     ajaxRequestForTriggerInfoToColumn: function (schedulerName, jobName, jobGroup, $detail) {
 
                         $.ajax({
@@ -350,6 +348,7 @@
                             }
                         });
                     },
+                    // 移除
                     ajaxRequestForJobRemove:function (schedulerName,jobName,jobGroup) {
                         bootbox.confirm({
                             title: '系统提示',

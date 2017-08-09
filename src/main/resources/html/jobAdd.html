@@ -41,15 +41,11 @@
 <!--在jquery中用ajax加载导航信息-->
 <div class="container">
     <div id="banner">
-        <!--<h3>-->
-           <!--&lt;!&ndash; <a href="api/jobInfo.json" target="_blank" class="lang" langkey="ViewJSONAPI">JSON API</a>&ndash;&gt;-->
-        <!--</h3>-->
+
     </div>
     <div id="content">
         <div class="page-header">
-          <!--  <h4>
-                {{= schedulerJob }}<a href="jobAdd.html">添加</a>
-            </h4>-->
+
         </div>
         <div class="row">
             <div class="col-lg-12">
@@ -101,9 +97,9 @@
                                         <input type="text" class="form-control" id="jobClass"  name="jobClass" placeholder="JobClass">
                                     </div>
                                 </div>
-                                <!--select-->
+                                <!--jobClass 参数选择select-->
                                 <div id="jobClassParamTypeDiv"></div>
-                                <!--input input-->
+                                <!--jobClass 参数选择后具体参数填写-->
                                 <div id="jobClassParamTypeInputDiv"></div>
                             </div>
                             <!-- jobclass构造函数的参数类型和参数值，根据系统返回的jobType区分（1-继承org.quartz.Job类，2-自定义类） -->
@@ -233,7 +229,7 @@
 
                         <div class="form-group">
                             <div class="col-lg-10 col-lg-offset-2">
-                                <button type="reset" class="btn btn-default">Cancel</button>
+                                <button type="button" class="btn btn-default" onclick="history.back();">Cancel</button>
                                 <button type="submit" class="btn btn-primary">Submit</button>
                             </div>
                         </div>
@@ -265,11 +261,9 @@
                 var type = quartzweb.common.getWindowhrefVar("type");
                 if(type==="modify"){
                     var jobName = quartzweb.common.getWindowhrefVar("jobName");
-                    $("#jobName").val(jobName);
-                    $("#jobName").attr("readOnly", "readOnly");
+                    $("#jobName").attr("readOnly", "readOnly").val(jobName);
                     var jobGroup = quartzweb.common.getWindowhrefVar("jobGroup");
-                    $("#jobGroup").val(jobGroup);
-                    $("#jobGroup").attr("readOnly", "readOnly");
+                    $("#jobGroup").attr("readOnly", "readOnly").val(jobGroup);
 
                 }
 
@@ -288,29 +282,20 @@
                     fields: {
                         /*验证*/
                         schedulerName :{
-                            message: 'The SchedulerName is not valid',
                             validators : {
                                 notEmpty: {
-                                    /*非空提示*/
-                                    message: 'The SchedulerName is not empty'
                                 }
-                            },
+                            }
                         },
                         jobName :{
-                            message: 'The JobName is not valid',
                             validators : {
                                 notEmpty: {
-                                    /*非空提示*/
-                                    message: 'The JobName is not empty'
                                 }
-                            },
+                            }
                         },
                         jobGroup :{
-                            message: 'The JobGroup is not valid',
                             validators : {
                                 notEmpty: {
-                                    /*非空提示*/
-                                    message: 'The JobGroup is not empty'
                                 }
                             }
                         },
@@ -343,11 +328,7 @@
                                                 success: function (data) {
                                                     if (1 === data.resultCode) {
                                                         // 校验成功
-                                                        if(data.content.result === true) {
-                                                            flag = false;
-                                                        } else {
-                                                            flag = true
-                                                        }
+                                                        flag = data.content.result !== true;
                                                     } else {
                                                         alert("system is error : " + data.content);
                                                         flag = false;
@@ -363,11 +344,8 @@
                             }
                         },
                         jobClass :{
-                            message: 'The JobClass is not valid',
                             validators : {
                                 notEmpty: {
-                                    /*非空提示*/
-                                    message: 'The JobClass is not empty'
                                 },
                                 callback: {
                                     message: 'class not found',
@@ -396,6 +374,7 @@
                                                                 // 选择执行方法
                                                                 $("#methodFormGroup").hide();
                                                                 $("#methodInvokerTypeFormGroup").hide();
+                                                                // 选择构造函数
                                                                 $("#jobClassParamTypeDiv").hide();
                                                                 $("#jobClassParamTypeInputDiv").hide();
 
@@ -405,6 +384,7 @@
                                                                 // 选择执行方法
                                                                 $("#methodFormGroup").show();
                                                                 $("#methodInvokerTypeFormGroup").show();
+                                                                // 选择构造函数
                                                                 $("#jobClassParamTypeDiv").show();
                                                                 $("#jobClassParamTypeInputDiv").show();
                                                                 // 设置构造函数
@@ -417,7 +397,6 @@
 
                                                                 var methoddoTtmpl = doT.template(methodtmpl);
 
-                                                                console.log(data.content)
                                                                 var methodcontentHtml = methoddoTtmpl(data.content);
                                                                 $("#jobClassMethodParamTypeDiv").html(methodcontentHtml);
 
@@ -459,7 +438,6 @@
                 }).on('success.form.bv', function(e) {
                     // Prevent form submission
                     e.preventDefault();
-
                     // Get the form instance
                     var $form = $(e.target);
 

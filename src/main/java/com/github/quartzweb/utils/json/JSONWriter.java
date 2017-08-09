@@ -133,13 +133,28 @@ public class JSONWriter {
                 write("null");
                 return;
             }
-            try {
-                String objStr = o.getClass().getName();
-                writeString(objStr);
-                return;
-            } catch (Exception e) {
-                throw new IllegalArgumentException("not support type : " + o.getClass());
+            if (o instanceof Object[]) {
+                Object[] oArr = (Object[]) o;
+                write('[');
+                for (int i = 0; i < oArr.length; i++) {
+                    Object o2 = oArr[i];
+                    if (i != 0) {
+                        write(',');
+                    }
+                    writeObject(o2);
+                }
+                write(']');
+
+            } else {
+                try {
+                    String objStr = o.getClass().getName();
+                    writeString(objStr);
+                    return;
+                } catch (Exception e) {
+                    throw new IllegalArgumentException("not support type : " + o.getClass());
+                }
             }
+
         }
 
 

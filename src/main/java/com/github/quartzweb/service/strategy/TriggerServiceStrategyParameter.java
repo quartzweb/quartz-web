@@ -6,6 +6,7 @@ package com.github.quartzweb.service.strategy;
 import com.github.quartzweb.exception.UnsupportedTranslateException;
 import com.github.quartzweb.service.HttpParameterNameConstants;
 import com.github.quartzweb.utils.DateUtils;
+import com.github.quartzweb.utils.RequestUtils;
 import com.github.quartzweb.utils.StringUtils;
 
 import javax.servlet.http.HttpServletRequest;
@@ -275,33 +276,14 @@ public class TriggerServiceStrategyParameter implements ServiceStrategyParameter
             this.setDescription(request.getParameter(HttpParameterNameConstants.Trigger.DESCRIPTION));
             this.setPriority(request.getParameter(HttpParameterNameConstants.Trigger.PRIORITY));
 
-            Map<String, String> jobDataMap = null;
             // 获取jobDataMap
-            Map<String, String[]> dataMap = request.getParameterMap();
+            Map<String, String> mapData = RequestUtils.getMapData(request,
+                    HttpParameterNameConstants.Job.DATA_MAP_KEY_PREFIX,
+                    HttpParameterNameConstants.Job.DATA_MAP_VALUE_PREFIX);
 
-            for (Map.Entry<String, String[]> dataEntry : dataMap.entrySet()) {
-                String key = dataEntry.getKey();
-                // 是否为构造函数参数
-                if (key.contains(HttpParameterNameConstants.Job.DATA_MAP_KEY_PREFIX)) {
-
-                    String[] dataMapKeyInfo = key.split("_");
-
-                    //参数名称是否正确
-                    if (dataMapKeyInfo.length != 2) {
-                        throw new UnsupportedTranslateException(" jobDataMap format exception");
-                    }
-                    //序号
-                    String index = dataMapKeyInfo[1];
-
-                    if (jobDataMap == null) {
-                        jobDataMap = new LinkedHashMap<String, String>();
-                    }
-                    jobDataMap.put(request.getParameter(HttpParameterNameConstants.Job.DATA_MAP_KEY_PREFIX  + index),
-                            request.getParameter(HttpParameterNameConstants.Job.DATA_MAP_VALUE_PREFIX + index));
-                }
+            if (mapData.size() > 0) {
+                this.setJobDataMap(mapData);
             }
-
-            this.setJobDataMap(jobDataMap);
             //开始时间
             String startDate = request.getParameter(HttpParameterNameConstants.Trigger.START_DATE);
             if (!StringUtils.isEmpty(startDate)) {
